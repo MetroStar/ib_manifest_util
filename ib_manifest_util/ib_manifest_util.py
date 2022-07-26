@@ -29,8 +29,10 @@ def create_ib_manifest(file):
     run_subprocess("conda-vendor ironbank-gen --file local_channel_env.yaml -p linux-64")
 
 
-def generate_copy_statements(hardening_path="../hardening_manifest.yaml",
-                             startup_scripts_config="../start_scripts.yaml"):
+def generate_copy_statements(
+        hardening_path="../hardening_manifest.yaml",
+        startup_scripts_config="../start_scripts.yaml"
+):
     yaml = YAML(typ="safe")
     conda_vendor_manifest = yaml.load(open(hardening_path).read())
 
