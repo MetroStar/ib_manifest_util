@@ -9,6 +9,7 @@ from pathlib import Path
 
 from ib_manifest_util.version import __version__
 
+
 def run_subprocess(command):
     process = subprocess.Popen(command.split(" "), stdout=subprocess.PIPE)
     for c in iter(lambda: process.stdout.read(1), b""):
@@ -28,7 +29,8 @@ def create_ib_manifest(file):
     run_subprocess("conda-vendor ironbank-gen --file local_channel_env.yaml -p linux-64")
 
 
-def generate_copy_statements(hardening_path="../hardening_manifest.yaml", startup_scripts_config="../start_scripts.yaml"):
+def generate_copy_statements(hardening_path="../hardening_manifest.yaml",
+                             startup_scripts_config="../start_scripts.yaml"):
     yaml = YAML(typ="safe")
     conda_vendor_manifest = yaml.load(open(hardening_path).read())
 
@@ -78,14 +80,14 @@ def generate_copy_statements(hardening_path="../hardening_manifest.yaml", startu
     startup_text += '"/home/${NB_USER}/"]'
 
     copy_text = (
-        noarch_copy
-        + "\n"
-        + linux_64_copy
-        + "\n"
-        + underscore_copy
-        + "\n"
-        + startup_text
-        + "\n"
+            noarch_copy
+            + "\n"
+            + linux_64_copy
+            + "\n"
+            + underscore_copy
+            + "\n"
+            + startup_text
+            + "\n"
     )
     return copy_text
 
@@ -105,7 +107,6 @@ def test_existence_copy_markers(dockerfile_path="../Dockerfile"):
 
 
 def insert_copy_statements(copy_text, dockerfile_path="../Dockerfile"):
-
     with open(dockerfile_path, "r") as f:
         docker_buffer = f.read()
 
@@ -113,18 +114,22 @@ def insert_copy_statements(copy_text, dockerfile_path="../Dockerfile"):
     end_marker = "#End_of_copy_DONT_DELETE"
 
     new_dockerfile = (
-        docker_buffer.split(start_marker)[0]
-        + f"\n{start_marker}\n"
-        + copy_text
-        + f"\n{end_marker}\n"
-        + docker_buffer.split(end_marker)[1]
+            docker_buffer.split(start_marker)[0]
+            + f"\n{start_marker}\n"
+            + copy_text
+            + f"\n{end_marker}\n"
+            + docker_buffer.split(end_marker)[1]
     )
 
     with open(dockerfile_path, "w") as f:
         docker_buffer = f.write(new_dockerfile)
 
 
-def update_hardening_manifest(dockerfile_version, startup_scripts_path, hardening_manifest_path="../hardening_manifest.yaml"):
+def update_hardening_manifest(
+        dockerfile_version,
+        startup_scripts_path,
+        hardening_manifest_path="../hardening_manifest.yaml"
+):
     run_subprocess("conda-vendor vendor --file local_channel_env.yaml -p linux-64")
 
     with open("local_channel_env.yaml", "r") as f:
@@ -187,18 +192,18 @@ def update_hardening_manifest(dockerfile_version, startup_scripts_path, hardenin
 
 @click.command("download", help="Download necessary Python packages given an Iron Bank hardening_manifest.yaml")
 @click.option("--file", default=None, help="Path to hardening manifest")
-
 def download(file):
     manifest = yaml.safe_load(open(file).read())
-    
+
     urls = [x['url'] for x in manifest['resources']]
-    
+
     for i, url in enumerate(urls):
         fname = url.split('/')[-1].lstrip('_')
-        print(f"Downloading {i+1} of {len(urls)}: {fname}")
+        print(f"Downloading {i + 1} of {len(urls)}: {fname}")
         with requests.get(url, allow_redirects=True) as r:
             with open(f"../{fname}", 'wb') as f:
                 f.write(r.content)
+
 
 @click.group()
 @click.version_option(__version__)
@@ -207,12 +212,13 @@ def main() -> None:
     pass
 
 
-@click.command("update_manifest", help="Update the local hardening manifest and Dockerfile with necessary packages given an environment file")
+@click.command(
+    "update_manifest",
+    help="Update the local hardening manifest and Dockerfile with necessary packages given an environment file"
+)
 @click.option("--file", default=None, help="Path to environment file")
 @click.option("--startup-scripts-path", default=None, help="Path to .yaml file containing additional files to copy")
-
 @click.option("--dockerfile-version", prompt="Please enter the desired docker image version")
-
 def update_manifest(file, dockerfile_version, startup_scripts_path):
     test_existence_copy_markers()
     create_ib_manifest(file)
@@ -220,9 +226,9 @@ def update_manifest(file, dockerfile_version, startup_scripts_path):
     copy_text = generate_copy_statements()
     insert_copy_statements(copy_text)
 
+
 main.add_command(update_manifest)
 main.add_command(download)
-
 
 if __name__ == "__main__":
     main()

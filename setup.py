@@ -11,5 +11,5 @@ setup(
     version=__version__,
     install_requires=["click", "ruamel.yaml", "conda_vendor"],
     packages=find_packages(),
-    entry_points={"console_scripts": ["ib_manifest_util = ib_manifest_util.__main__:main"]}   
+    entry_points={"console_scripts": ["ib_manifest_util = ib_manifest_util.__main__:main"]}
 )
