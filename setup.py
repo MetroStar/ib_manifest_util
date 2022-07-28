@@ -1,5 +1,6 @@
-from setuptools import setup, find_packages, find_namespace_packages
 from pathlib import Path
+
+from setuptools import find_namespace_packages, find_packages, setup
 
 root_dir = Path(__file__).absolute().parent
 
@@ -11,5 +12,7 @@ setup(
     version=__version__,
     install_requires=["click", "ruamel.yaml", "conda_vendor"],
     packages=find_packages(),
-    entry_points={"console_scripts": ["ib_manifest_util = ib_manifest_util.__main__:main"]}
+    entry_points={
+        "console_scripts": ["ib_manifest_util = ib_manifest_util.__main__:main"]
+    },
 )
