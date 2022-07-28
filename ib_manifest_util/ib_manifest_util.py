@@ -59,6 +59,7 @@ def generate_copy_statements(
     linux_64_pkgs = []
     underscore_copy = ""
 
+    # TODO: For 'noarch' and 'linux-64', make one function that is easy to test (pass os string)
     for x in conda_vendor_manifest["resources"]:
         pkg = x["url"].split("/")[-1]
 
@@ -74,6 +75,7 @@ def generate_copy_statements(
         if "linux-64" in x["url"] and pkg[0] == "_":
             underscore_copy += f"COPY [\"{pkg.lstrip('_')}\", \"${{LOCAL_CONDA_CHANNEL}}/linux-64/{pkg}\"]\n"
 
+    # TODO: Make one function to handle the copy strings
     noarch_copy = ""
     linux_64_copy = ""
 
@@ -92,6 +94,8 @@ def generate_copy_statements(
         )
     startup_text = "COPY ["
 
+    # TODO: yaml.load outside of list comp
+    # TODO: add try except for all file loads in case they don't exist (make a function to check and load)
     with open(startup_config_path, "r") as f:
         startup_names = [_["filename"] for _ in yaml.load(f)["resources"]]
 
