@@ -10,6 +10,12 @@ from ruamel.yaml import YAML
 
 from ib_manifest_util.version import __version__
 
+PARENT_DIR = Path(__file__).parent.resolve()
+hardening_manifest_path = Path(PARENT_DIR, "../hardening_manifest.yaml")
+# startup_scripts_config_path = Path(PARENT_DIR, "../start_scripts.yaml")
+# Use hardening_manifest_path for testing because startup_scripts_config_path is unknown
+startup_scripts_config_path = hardening_manifest_path
+
 
 def run_subprocess(command):
     process = subprocess.Popen(command.split(" "), stdout=subprocess.PIPE)
@@ -33,9 +39,19 @@ def create_ib_manifest(file):
 
 
 def generate_copy_statements(
-        hardening_path="../hardening_manifest.yaml",
-        startup_scripts_config="../start_scripts.yaml"
-):
+    hardening_path: str | Path, startup_config_path: str | Path
+) -> str:
+    """Generates the text for the copy statements in the dockerfile.
+
+    Args:
+        hardening_path: str | Path
+            Path to the hardening manifest file, hardening_manifest.yaml
+        startup_config_path: str | Path
+            Path to the startup scripts configuration file, start_scripts.yaml
+
+    Returns: str
+        String of copy statements
+    """
     yaml = YAML(typ="safe")
     conda_vendor_manifest = yaml.load(open(hardening_path).read())
 
