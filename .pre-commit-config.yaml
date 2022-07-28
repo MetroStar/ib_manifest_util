@@ -1,0 +1,22 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+    - id: check-added-large-files
+    - id: check-merge-conflict
+    - id: check-yaml
+    - id: end-of-file-fixer
+      exclude: ^data/
+    - id: trailing-whitespace
+      exclude: ^data/
+
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+    - id: black
+      exclude: ^data/
+  - repo: https://github.com/pycqa/isort
+    rev: 5.9.3
+    hooks:
+    - id: isort
+      args: ["--profile", "black"]
