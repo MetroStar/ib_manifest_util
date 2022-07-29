@@ -17,6 +17,32 @@ hardening_manifest_path = Path(PARENT_DIR, "../hardening_manifest.yaml")
 startup_scripts_config_path = hardening_manifest_path
 
 
+def load_yaml(file_path: str | Path, typ: str = "safe") -> dict:
+    """
+
+    Args:
+        file_path: str | Path
+            Full path to yaml file.
+        typ: str
+            Options from yaml docstring:
+                'rt'/None -> RoundTripLoader/RoundTripDumper,  (default)
+                'safe'    -> SafeLoader/SafeDumper,
+                'unsafe'  -> normal/unsafe Loader/Dumper
+                'base'    -> baseloader
+
+    Returns: dict
+
+    """
+    yaml_loader = YAML(typ=typ)
+
+    file_path = Path(file_path).resolve()
+    if file_path.exists():
+        with open(file_path, 'r') as f:
+            return yaml_loader.load(f)
+    else:
+        raise FileNotFoundError
+
+
 def run_subprocess(command):
     process = subprocess.Popen(command.split(" "), stdout=subprocess.PIPE)
     for c in iter(lambda: process.stdout.read(1), b""):
@@ -52,8 +78,8 @@ def generate_copy_statements(
     Returns: str
         String of copy statements
     """
-    yaml_safe = YAML(typ="safe")
-    conda_vendor_manifest = yaml_safe.load(open(hardening_path).read())
+    conda_vendor_manifest = load_yaml(hardening_path)
+    startup_config = load_yaml(startup_config_path)
 
     noarch_pkgs = []
     linux_64_pkgs = []
@@ -92,16 +118,12 @@ def generate_copy_statements(
             + [f'"{x}", \\\n' for x in linux_64_pkgs]
             + ['"${LOCAL_CONDA_CHANNEL}/linux-64/"]']
         )
+
+    # Make startup text
     startup_text = "COPY ["
-
-    # TODO: yaml.load outside of list comp
-    # TODO: add try except for all file loads in case they don't exist (make a function to check and load)
-    with open(startup_config_path, "r") as f:
-        startup_names = [_["filename"] for _ in yaml_safe.load(f)["resources"]]
-
+    startup_names = [resource["filename"] for resource in startup_config["resources"]]
     for name in startup_names:
         startup_text += f'"{name}", \ \n'
-
     startup_text += '"/home/${NB_USER}/"]'
 
     copy_text = (
