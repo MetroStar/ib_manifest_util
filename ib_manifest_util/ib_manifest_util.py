@@ -17,6 +17,7 @@ hardening_manifest_path = Path(PARENT_DIR, "../hardening_manifest.yaml")
 startup_scripts_config_path = hardening_manifest_path
 
 
+# TODO: Make test
 def load_yaml(file_path: str | Path, typ: str = "safe") -> dict:
     """
 
@@ -64,6 +65,68 @@ def create_ib_manifest(file):
     )
 
 
+# TODO: Make test
+def parse_url_and_make_copy_statements(res: dict, pkg_d: dict) -> dict:
+    """Parse resource url package name and make dockerfile copy statements.
+
+    Args:
+        res: dict
+            Resource dictionary with package names
+        pkg_d: dict
+            Dictionary for collecting package names and underscore copy strings
+    Returns: dict
+        Dictionary of copy statements
+    """
+    pkg = res["url"].split("/")[-1]
+    if pkg[0] != "_":
+        for key in pkg_d:
+            if key in res["url"]:
+                pkg_d[key].append(pkg)
+                pkg_d[
+                    "underscore_copy"
+                ] += f"COPY [\"{pkg.lstrip('_')}\", \"${{LOCAL_CONDA_CHANNEL}}/{key}/{pkg}\"]\n"
+    return pkg_d
+
+
+# TODO: Make test
+def make_long_copy_statement(d: dict, k: str) -> str:
+    """Make dockerfile copy statement.
+
+    Args:
+        d: dict
+            Package dictionary
+        k: str
+            Key (e.g., noarch)
+
+    Returns: str
+        Copy statement
+    """
+    return "".join(
+        ["COPY ["]
+        + [f'"{p}", \\\n' for p in d[k]]
+        + [f'"${{LOCAL_CONDA_CHANNEL}}/{k}/"]']
+    )
+
+
+# TODO: Make test
+def make_startup_statement(startup_c: dict) -> str:
+    """Make startup copy statement.
+
+    Args:
+        startup_c: dict
+            Startup configuration
+
+    Returns: str
+        Copy statement
+    """
+    text = "COPY ["
+    startup_names = [resource["filename"] for resource in startup_c["resources"]]
+    for name in startup_names:
+        text += f'"{name}", \ \n'
+    text += '"/home/${NB_USER}/"]'
+    return text
+
+
 def generate_copy_statements(
     hardening_path: str | Path, startup_config_path: str | Path
 ) -> str:
@@ -78,62 +141,40 @@ def generate_copy_statements(
     Returns: str
         String of copy statements
     """
+    # Get data from files
     conda_vendor_manifest = load_yaml(hardening_path)
     startup_config = load_yaml(startup_config_path)
 
-    noarch_pkgs = []
-    linux_64_pkgs = []
-    underscore_copy = ""
-
-    # TODO: For 'noarch' and 'linux-64', make one function that is easy to test (pass os string)
-    for x in conda_vendor_manifest["resources"]:
-        pkg = x["url"].split("/")[-1]
-
-        if "noarch" in x["url"] and pkg[0] != "_":
-            noarch_pkgs.append(pkg)
-
-        if "linux-64" in x["url"] and pkg[0] != "_":
-            linux_64_pkgs.append(pkg)
-
-        if "noarch" in x["url"] and pkg[0] == "_":
-            underscore_copy += f"COPY [\"{pkg.lstrip('_')}\", \"${{LOCAL_CONDA_CHANNEL}}/noarch/{pkg}\"]\n"
-
-        if "linux-64" in x["url"] and pkg[0] == "_":
-            underscore_copy += f"COPY [\"{pkg.lstrip('_')}\", \"${{LOCAL_CONDA_CHANNEL}}/linux-64/{pkg}\"]\n"
-
-    # TODO: Make one function to handle the copy strings
-    noarch_copy = ""
-    linux_64_copy = ""
-
-    if len(noarch_pkgs) != 0:
-        noarch_copy = "".join(
-            ["COPY ["]
-            + [f'"{x}", \\\n' for x in noarch_pkgs]
-            + ['"${LOCAL_CONDA_CHANNEL}/noarch/"]']
+    # Make package dictionary
+    copy_statement_dict = {"noarch": [], "linux-64": [], "underscore_copy": ""}
+    for resource in conda_vendor_manifest["resources"]:
+        copy_statement_dict = parse_url_and_make_copy_statements(
+            resource, copy_statement_dict
         )
 
-    if len(linux_64_pkgs) != 0:
-        linux_64_copy = "".join(
-            ["COPY ["]
-            + [f'"{x}", \\\n' for x in linux_64_pkgs]
-            + ['"${LOCAL_CONDA_CHANNEL}/linux-64/"]']
+    # Make long dockerfile copy commands
+    if len(copy_statement_dict["noarch"]) != 0:
+        copy_statement_dict["noarch_copy"] = make_long_copy_statement(
+            copy_statement_dict, "noarch"
         )
 
-    # Make startup text
-    startup_text = "COPY ["
-    startup_names = [resource["filename"] for resource in startup_config["resources"]]
-    for name in startup_names:
-        startup_text += f'"{name}", \ \n'
-    startup_text += '"/home/${NB_USER}/"]'
+    if len(copy_statement_dict["linux-64"]) != 0:
+        copy_statement_dict["linux_64_copy"] = make_long_copy_statement(
+            copy_statement_dict, "linux-64"
+        )
 
+    # Make startup copy statement
+    copy_statement_dict["startup_text"] = make_startup_statement(startup_config)
+
+    # Assemble copy statements
     copy_text = (
-        noarch_copy
+        copy_statement_dict["noarch_copy"]
         + "\n"
-        + linux_64_copy
+        + copy_statement_dict["linux_64_copy"]
         + "\n"
-        + underscore_copy
+        + copy_statement_dict["underscore_copy"]
         + "\n"
-        + startup_text
+        + copy_statement_dict["startup_text"]
         + "\n"
     )
     return copy_text
