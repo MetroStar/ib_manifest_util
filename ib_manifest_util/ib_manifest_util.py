@@ -37,7 +37,7 @@ def load_yaml(file_path: str | Path, typ: str = "safe") -> dict:
 
     file_path = Path(file_path).resolve()
     if file_path.exists():
-        with open(file_path, 'r') as f:
+        with open(file_path, "r") as f:
             return yaml_loader.load(f)
     else:
         raise FileNotFoundError
