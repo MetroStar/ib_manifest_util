@@ -52,8 +52,8 @@ def generate_copy_statements(
     Returns: str
         String of copy statements
     """
-    yaml = YAML(typ="safe")
-    conda_vendor_manifest = yaml.load(open(hardening_path).read())
+    yaml_safe = YAML(typ="safe")
+    conda_vendor_manifest = yaml_safe.load(open(hardening_path).read())
 
     noarch_pkgs = []
     linux_64_pkgs = []
@@ -97,7 +97,7 @@ def generate_copy_statements(
     # TODO: yaml.load outside of list comp
     # TODO: add try except for all file loads in case they don't exist (make a function to check and load)
     with open(startup_config_path, "r") as f:
-        startup_names = [_["filename"] for _ in yaml.load(f)["resources"]]
+        startup_names = [_["filename"] for _ in yaml_safe.load(f)["resources"]]
 
     for name in startup_names:
         startup_text += f'"{name}", \ \n'
