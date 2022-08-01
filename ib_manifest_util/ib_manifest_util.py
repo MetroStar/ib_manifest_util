@@ -64,6 +64,12 @@ def create_ib_manifest(file):
         "conda-vendor ironbank-gen --file local_channel_env.yaml -p linux-64"
     )
 
+def generate_copy_statements(
+    hardening_path="../hardening_manifest.yaml",
+    startup_scripts_config="../start_scripts.yaml",
+):
+    yaml = YAML(typ="safe")
+    conda_vendor_manifest = yaml.load(open(hardening_path).read())
 
 # TODO: Make test
 def parse_url_and_make_copy_statements(res: dict, pkg_d: dict) -> dict:
