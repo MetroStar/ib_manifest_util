@@ -1,11 +1,12 @@
+import platform
 import subprocess
 import sys
-import platform
-import requests
-from ruamel.yaml import YAML
-from ruamel import yaml
-import click
 from pathlib import Path
+
+import click
+import requests
+from ruamel import yaml
+from ruamel.yaml import YAML
 
 from ib_manifest_util.version import __version__
 
@@ -26,12 +27,14 @@ def create_ib_manifest(file):
     with open(file, "w") as f:
         yaml.dump(env, f)
 
-    run_subprocess("conda-vendor ironbank-gen --file local_channel_env.yaml -p linux-64")
+    run_subprocess(
+        "conda-vendor ironbank-gen --file local_channel_env.yaml -p linux-64"
+    )
 
 
 def generate_copy_statements(
-        hardening_path="../hardening_manifest.yaml",
-        startup_scripts_config="../start_scripts.yaml"
+    hardening_path="../hardening_manifest.yaml",
+    startup_scripts_config="../start_scripts.yaml",
 ):
     yaml = YAML(typ="safe")
     conda_vendor_manifest = yaml.load(open(hardening_path).read())
@@ -82,14 +85,14 @@ def generate_copy_statements(
     startup_text += '"/home/${NB_USER}/"]'
 
     copy_text = (
-            noarch_copy
-            + "\n"
-            + linux_64_copy
-            + "\n"
-            + underscore_copy
-            + "\n"
-            + startup_text
-            + "\n"
+        noarch_copy
+        + "\n"
+        + linux_64_copy
+        + "\n"
+        + underscore_copy
+        + "\n"
+        + startup_text
+        + "\n"
     )
     return copy_text
 
@@ -116,11 +119,11 @@ def insert_copy_statements(copy_text, dockerfile_path="../Dockerfile"):
     end_marker = "#End_of_copy_DONT_DELETE"
 
     new_dockerfile = (
-            docker_buffer.split(start_marker)[0]
-            + f"\n{start_marker}\n"
-            + copy_text
-            + f"\n{end_marker}\n"
-            + docker_buffer.split(end_marker)[1]
+        docker_buffer.split(start_marker)[0]
+        + f"\n{start_marker}\n"
+        + copy_text
+        + f"\n{end_marker}\n"
+        + docker_buffer.split(end_marker)[1]
     )
 
     with open(dockerfile_path, "w") as f:
@@ -128,9 +131,9 @@ def insert_copy_statements(copy_text, dockerfile_path="../Dockerfile"):
 
 
 def update_hardening_manifest(
-        dockerfile_version,
-        startup_scripts_path,
-        hardening_manifest_path="../hardening_manifest.yaml"
+    dockerfile_version,
+    startup_scripts_path,
+    hardening_manifest_path="../hardening_manifest.yaml",
 ):
     run_subprocess("conda-vendor vendor --file local_channel_env.yaml -p linux-64")
 
@@ -144,8 +147,8 @@ def update_hardening_manifest(
     noarch_path = Path(noarch_raw)
     linux_path = Path(linux_raw)
 
-    noarch_target = Path('../config/noarch/repodata.json')
-    linux_target = Path('../config/linux-64/repodata.json')
+    noarch_target = Path("../config/noarch/repodata.json")
+    linux_target = Path("../config/linux-64/repodata.json")
 
     noarch_path.rename(noarch_target)
     linux_path.rename(linux_target)
@@ -160,7 +163,9 @@ def update_hardening_manifest(
         with open(startup_scripts_path, "r") as f:
             startup_scripts = yaml.safe_load(f)
         hardening_manifest["resources"] = ib_manifest["resources"]
-        hardening_manifest["resources"] = startup_scripts["resources"] + ib_manifest["resources"]
+        hardening_manifest["resources"] = (
+            startup_scripts["resources"] + ib_manifest["resources"]
+        )
     else:
         hardening_manifest["resources"] = ib_manifest["resources"]
 
@@ -192,18 +197,21 @@ def update_hardening_manifest(
         yaml.dump(env, f)
 
 
-@click.command("download", help="Download necessary Python packages given an Iron Bank hardening_manifest.yaml")
+@click.command(
+    "download",
+    help="Download necessary Python packages given an Iron Bank hardening_manifest.yaml",
+)
 @click.option("--file", default=None, help="Path to hardening manifest")
 def download(file):
     manifest = yaml.safe_load(open(file).read())
 
-    urls = [x['url'] for x in manifest['resources']]
+    urls = [x["url"] for x in manifest["resources"]]
 
     for i, url in enumerate(urls):
-        fname = url.split('/')[-1].lstrip('_')
+        fname = url.split("/")[-1].lstrip("_")
         print(f"Downloading {i + 1} of {len(urls)}: {fname}")
         with requests.get(url, allow_redirects=True) as r:
-            with open(f"../{fname}", 'wb') as f:
+            with open(f"../{fname}", "wb") as f:
                 f.write(r.content)
 
 
@@ -216,11 +224,17 @@ def main() -> None:
 
 @click.command(
     "update_manifest",
-    help="Update the local hardening manifest and Dockerfile with necessary packages given an environment file"
+    help="Update the local hardening manifest and Dockerfile with necessary packages given an environment file",
 )
 @click.option("--file", default=None, help="Path to environment file")
-@click.option("--startup-scripts-path", default=None, help="Path to .yaml file containing additional files to copy")
-@click.option("--dockerfile-version", prompt="Please enter the desired docker image version")
+@click.option(
+    "--startup-scripts-path",
+    default=None,
+    help="Path to .yaml file containing additional files to copy",
+)
+@click.option(
+    "--dockerfile-version", prompt="Please enter the desired docker image version"
+)
 def update_manifest(file, dockerfile_version, startup_scripts_path):
     test_existence_copy_markers()
     create_ib_manifest(file)
