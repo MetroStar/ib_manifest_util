@@ -5,11 +5,12 @@ from pathlib import Path
 
 import click
 import requests
-from ruamel import yaml
 from ruamel.yaml import YAML
 
 from ib_manifest_util.version import __version__
 
+yaml = YAML(typ='safe')
+yaml.default_flow_style = False
 
 def run_subprocess(command):
     process = subprocess.Popen(command.split(" "), stdout=subprocess.PIPE)
@@ -18,9 +19,6 @@ def run_subprocess(command):
 
 
 def create_ib_manifest(file):
-    yaml = YAML(typ="safe")
-    yaml.default_flow_style = False
-
     with open(file, "r") as f:
         env = yaml.load(f)
     env["channels"] = ["conda-forge"]
@@ -36,7 +34,6 @@ def generate_copy_statements(
     hardening_path="../hardening_manifest.yaml",
     startup_scripts_config="../start_scripts.yaml",
 ):
-    yaml = YAML(typ="safe")
     conda_vendor_manifest = yaml.load(open(hardening_path).read())
 
     noarch_pkgs = []
@@ -138,7 +135,7 @@ def update_hardening_manifest(
     run_subprocess("conda-vendor vendor --file local_channel_env.yaml -p linux-64")
 
     with open("local_channel_env.yaml", "r") as f:
-        env = yaml.safe_load(f)
+        env = yaml.load(f)
     channel_name = env["name"]
 
     noarch_raw = "{}/noarch/repodata.json".format(channel_name)
@@ -154,14 +151,14 @@ def update_hardening_manifest(
     linux_path.rename(linux_target)
 
     with open("../hardening_manifest.yaml", "r") as f:
-        hardening_manifest = yaml.safe_load(f)
+        hardening_manifest = yaml.load(f)
 
     with open("ib_manifest.yaml", "r") as f:
-        ib_manifest = yaml.safe_load(f)
+        ib_manifest = yaml.load(f)
 
     if startup_scripts_path != None:
         with open(startup_scripts_path, "r") as f:
-            startup_scripts = yaml.safe_load(f)
+            startup_scripts = yaml.load(f)
         hardening_manifest["resources"] = ib_manifest["resources"]
         hardening_manifest["resources"] = (
             startup_scripts["resources"] + ib_manifest["resources"]
@@ -171,12 +168,8 @@ def update_hardening_manifest(
 
     hardening_manifest["tags"] = [dockerfile_version]
 
-    class Dumper(yaml.RoundTripDumper):
-        def increase_indent(self, *args, **kwargs):
-            return super().increase_indent(indentless=False)
-
     with open("/tmp/ib_temp.yaml", "w") as f:
-        yaml.dump(hardening_manifest, f, Dumper=Dumper)
+        yaml.dump(hardening_manifest, f)
 
     with open("/tmp/ib_temp.yaml", "r") as f:
         string = f.read()
@@ -191,7 +184,7 @@ def update_hardening_manifest(
     run_subprocess("rm ib_manifest.yaml")
 
     with open("local_channel_env.yaml", "r") as f:
-        env = yaml.safe_load(f)
+        env = yaml.load(f)
     env["channels"] = ["./local-channel"]
     with open("local_channel_env.yaml", "w") as f:
         yaml.dump(env, f)
@@ -203,7 +196,7 @@ def update_hardening_manifest(
 )
 @click.option("--file", default=None, help="Path to hardening manifest")
 def download(file):
-    manifest = yaml.safe_load(open(file).read())
+    manifest = yaml.load(open(file).read())
 
     urls = [x["url"] for x in manifest["resources"]]
 
