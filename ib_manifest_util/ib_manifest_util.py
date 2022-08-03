@@ -9,8 +9,38 @@ from ruamel.yaml import YAML
 
 from ib_manifest_util.version import __version__
 
-yaml = YAML(typ='safe')
-yaml.default_flow_style = False
+PARENT_DIR = Path(__file__).parent.resolve()
+hardening_manifest_path = Path(PARENT_DIR, "../hardening_manifest.yaml")
+# startup_scripts_config_path = Path(PARENT_DIR, "../start_scripts.yaml")
+# Use hardening_manifest_path for testing because startup_scripts_config_path is unknown
+startup_scripts_config_path = hardening_manifest_path
+
+
+# TODO: Make test
+def load_yaml(file_path: str | Path, loader_type: str = "safe") -> dict:
+    """Load a yaml file after checking that it exists.
+
+    Args:
+        file_path: str | Path
+            Full path to yaml file.
+        loader_type: str
+            Options from yaml docstring:
+                'rt'/None -> RoundTripLoader/RoundTripDumper,  (default)
+                'safe'    -> SafeLoader/SafeDumper,
+                'unsafe'  -> normal/unsafe Loader/Dumper
+                'base'    -> baseloader
+
+    Returns: dict
+
+    """
+    yaml_loader = YAML(typ=loader_type)
+
+    file_path = Path(file_path).resolve()
+    if file_path.exists():
+        with open(file_path, "r") as f:
+            return yaml_loader.load(f)
+    else:
+        raise FileNotFoundError
 
 def run_subprocess(command):
     process = subprocess.Popen(command.split(" "), stdout=subprocess.PIPE)
@@ -29,66 +59,121 @@ def create_ib_manifest(file):
         "conda-vendor ironbank-gen --file local_channel_env.yaml -p linux-64"
     )
 
+# TODO: Make test
+def parse_url_and_make_copy_statements(
+    resource: dict, statement_dictionary: dict
+) -> dict:
+    """Parse resource url package name and make dockerfile copy statements.
+
+    Args:
+        resource: dict
+            Resource dictionary with package names
+        statement_dictionary: dict
+            Dictionary for collecting package names and underscore copy strings
+    Returns: dict
+        Dictionary of copy statements
+    """
+    pkg = resource["url"].split("/")[-1]
+    if pkg[0] != "_":
+        for key in statement_dictionary:
+            if key in resource["url"]:
+                statement_dictionary[key].append(pkg)
+                statement_dictionary[
+                    "underscore_copy"
+                ] += f"COPY [\"{pkg.lstrip('_')}\", \"${{LOCAL_CONDA_CHANNEL}}/{key}/{pkg}\"]\n"
+    return statement_dictionary
+
+
+# TODO: Make test
+def make_long_copy_statement(
+    statement_dictionary: dict, operating_system_name: str
+) -> str:
+    """Make dockerfile copy statement.
+
+    Args:
+        statement_dictionary: dict
+            Package dictionary
+        operating_system_name: str
+            Name of OS (e.g., noarch)
+
+    Returns: str
+        Copy statement
+    """
+    return "".join(
+        ["COPY ["]
+        + [f'"{p}", \\\n' for p in statement_dictionary[operating_system_name]]
+        + [f'"${{LOCAL_CONDA_CHANNEL}}/{operating_system_name}/"]']
+    )
+
+
+# TODO: Make test
+def make_startup_statement(startup_configuration: dict) -> str:
+    """Make startup copy statement.
+
+    Args:
+        startup_configuration: dict
+
+    Returns: str
+        Copy statement
+    """
+    text = "COPY ["
+    startup_names = [
+        resource["filename"] for resource in startup_configuration["resources"]
+    ]
+    for name in startup_names:
+        text += f'"{name}", \ \n'
+    text += '"/home/${NB_USER}/"]'
+    return text
+
 
 def generate_copy_statements(
-    hardening_path="../hardening_manifest.yaml",
-    startup_scripts_config="../start_scripts.yaml",
-):
-    conda_vendor_manifest = yaml.load(open(hardening_path).read())
+    hardening_path: str | Path, startup_config_path: str | Path
+) -> str:
+    """Generates the text for the copy statements in the dockerfile.
 
-    noarch_pkgs = []
-    linux_64_pkgs = []
-    underscore_copy = ""
+    Args:
+        hardening_path: str | Path
+            Path to the hardening manifest file, hardening_manifest.yaml
+        startup_config_path: str | Path
+            Path to the startup scripts configuration file, start_scripts.yaml
 
-    for x in conda_vendor_manifest["resources"]:
-        pkg = x["url"].split("/")[-1]
+    Returns: str
+        String of copy statements
+    """
+    # Get data from files
+    conda_vendor_manifest = load_yaml(hardening_path)
+    startup_config = load_yaml(startup_config_path)
 
-        if "noarch" in x["url"] and pkg[0] != "_":
-            noarch_pkgs.append(pkg)
-
-        if "linux-64" in x["url"] and pkg[0] != "_":
-            linux_64_pkgs.append(pkg)
-
-        if "noarch" in x["url"] and pkg[0] == "_":
-            underscore_copy += f"COPY [\"{pkg.lstrip('_')}\", \"${{LOCAL_CONDA_CHANNEL}}/noarch/{pkg}\"]\n"
-
-        if "linux-64" in x["url"] and pkg[0] == "_":
-            underscore_copy += f"COPY [\"{pkg.lstrip('_')}\", \"${{LOCAL_CONDA_CHANNEL}}/linux-64/{pkg}\"]\n"
-
-    noarch_copy = ""
-    linux_64_copy = ""
-
-    if len(noarch_pkgs) != 0:
-        noarch_copy = "".join(
-            ["COPY ["]
-            + [f'"{x}", \\\n' for x in noarch_pkgs]
-            + ['"${LOCAL_CONDA_CHANNEL}/noarch/"]']
+    # Make package dictionary
+    copy_statement_dict = {"noarch": [], "linux-64": [], "underscore_copy": ""}
+    for vendor_resource in conda_vendor_manifest["resources"]:
+        copy_statement_dict = parse_url_and_make_copy_statements(
+            vendor_resource, copy_statement_dict
         )
 
-    if len(linux_64_pkgs) != 0:
-        linux_64_copy = "".join(
-            ["COPY ["]
-            + [f'"{x}", \\\n' for x in linux_64_pkgs]
-            + ['"${LOCAL_CONDA_CHANNEL}/linux-64/"]']
+    # Make long dockerfile copy commands
+    if len(copy_statement_dict["noarch"]) != 0:
+        copy_statement_dict["noarch_copy"] = make_long_copy_statement(
+            copy_statement_dict, "noarch"
         )
-    startup_text = "COPY ["
 
-    with open(startup_scripts_config, "r") as f:
-        startup_names = [_["filename"] for _ in yaml.load(f)["resources"]]
+    if len(copy_statement_dict["linux-64"]) != 0:
+        copy_statement_dict["linux_64_copy"] = make_long_copy_statement(
+            copy_statement_dict, "linux-64"
+        )
 
-    for name in startup_names:
-        startup_text += f'"{name}", \ \n'
+    # Make startup copy statement
+    copy_statement_dict["startup_text"] = make_startup_statement(startup_config)
 
-    startup_text += '"/home/${NB_USER}/"]'
-
+    # Assemble copy statements
     copy_text = (
-        noarch_copy
+        copy_statement_dict["noarch_copy"]
         + "\n"
-        + linux_64_copy
+        + copy_statement_dict["linux_64_copy"]
         + "\n"
-        + underscore_copy
+        + copy_statement_dict["underscore_copy"]
         + "\n"
-        + startup_text
+        + copy_statement_dict["startup_text"]
         + "\n"
     )
     return copy_text
@@ -232,7 +317,10 @@ def update_manifest(file, dockerfile_version, startup_scripts_path):
     test_existence_copy_markers()
     create_ib_manifest(file)
     update_hardening_manifest(dockerfile_version, startup_scripts_path)
-    copy_text = generate_copy_statements()
+    copy_text = generate_copy_statements(
+        hardening_path=hardening_manifest_path,
+        startup_config_path=startup_scripts_config_path,
+    )
     insert_copy_statements(copy_text)
 
 
