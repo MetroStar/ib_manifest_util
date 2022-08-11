@@ -1,3 +1,1 @@
-from .ib_manifest_util import main
-
-main()
+# TODO update this after reorganization is complete.

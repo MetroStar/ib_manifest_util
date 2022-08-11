@@ -1,8 +1,11 @@
-import pkg_resources
+from pathlib import Path
 
-from ib_manifest_util.ib_manifest_util import main
+VERSION = "0.1.0"
 
-__all__ = ["main"]
+PACKAGE_DIR = Path(__file__).parent.resolve()
+DEVELOPMENT_DIR = PACKAGE_DIR.joinpath("..").resolve()
+TEMPLATE_DIR = PACKAGE_DIR.joinpath("templates")
+TEST_DATA_DIR = DEVELOPMENT_DIR.joinpath("tests", "data")
 
 """
 Iron Bank Manifest Utility
@@ -10,11 +13,6 @@ Iron Bank Manifest Utility
 A command line tool to assist with updating and testing Iron Bank images.
 """
 
-try:
-    __version__ = pkg_resources.get_distribution("ib_manifest_util").version
-except Exception:
-    __version__ = "unknown"
-
 __app_name__ = "Iron Bank Manifest Utility"
-__version__ = "0.1.0"
+__version__ = VERSION
 __author__ = "Ryan Crow, Tyler Potts"

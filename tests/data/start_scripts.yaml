@@ -1,0 +1,21 @@
+resources:
+  - url: https://github.com/dirkcgrunwald/jupyter_codeserver_proxy-/archive/5596bc9c2fbd566180545fa242c659663755a427.tar.gz
+    filename: code_server.tar.gz
+    validation:
+      type: sha256
+      value: 7a286d6f201ae651368b65505cba7b0a137c81b2ac0fd637160d082bb14db032
+  - url: https://raw.githubusercontent.com/jupyter/docker-stacks/c9546339815d832f37d5c48bbb4503371eea60e0/base-notebook/start.sh
+    filename: start.sh
+    validation:
+      type: sha256
+      value: a29a47b95df00035a78792e436a548ec11d1b2721e3281595983865a86afb84d
+  - url: https://raw.githubusercontent.com/jupyter/docker-stacks/c9546339815d832f37d5c48bbb4503371eea60e0/base-notebook/start-notebook.sh
+    filename: start-notebook.sh
+    validation:
+      type: sha256
+      value: 551552538e420d66374dafb2e62fafed1db7e76e890511710a7536e8ca362ca6
+  - url: https://raw.githubusercontent.com/jupyter/docker-stacks/c9546339815d832f37d5c48bbb4503371eea60e0/base-notebook/start-singleuser.sh
+    filename: start-singleuser.sh
+    validation:
+      type: sha256
+      value: e69a6bd3d94d57b2c783454019eda62f1b8d6600f2e70859b26e61618805e88a

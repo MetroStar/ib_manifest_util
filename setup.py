@@ -10,7 +10,7 @@ exec(open(root_dir / "ib_manifest_util/version.py").read())
 setup(
     name="ib_manifest_util",
     version=__version__,
-    install_requires=["click", "ruamel.yaml", "conda_vendor"],
+    install_requires=["click", "ruamel.yaml", "conda_vendor", "jinja2"],
     packages=find_packages(),
     entry_points={
         "console_scripts": ["ib_manifest_util = ib_manifest_util.__main__:main"]
