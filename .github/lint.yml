@@ -1,0 +1,24 @@
+name: Linting
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install pre-commit
+        run: |
+          pip install pre-commit jupyter pygments==2.10.0 markupsafe==2.0.1
+
+      - name: Run pre-commit hooks
+        run: pre-commit run --all

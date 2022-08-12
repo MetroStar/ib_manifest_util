@@ -1,0 +1,40 @@
+name: Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@master
+        with:
+          miniforge-variant: Miniforge3
+          miniforge-version: latest
+          activate-environment: ib_manifest_env
+          environment-file: environment.yml
+          python-version: ${{ matrix.python-version }}
+          auto-activate-base: false
+          channels: conda-forge
+          channel-priority: strict
+
+      - name: Install package
+        run: |
+          pip install -e .
+
+      - name: Conda list
+        run: conda list
+
+      - name: Test with pytest
+        run: |
+          pytest tests -vvv --cov=ib_manifest_util
