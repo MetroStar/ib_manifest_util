@@ -47,5 +47,3 @@ def test_write_templatized_file_hardening():
 
     write_templatized_file(hardening_manifest_tpl, hardening_manifest_path, content)
 
-
-test_write_templatized_file_hardening()
