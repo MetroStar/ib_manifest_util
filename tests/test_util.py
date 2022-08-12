@@ -5,7 +5,7 @@ from ib_manifest_util.util import write_templatized_file
 def test_write_templatized_file_hardening():
     # TODO this is just copied over, may need work
     hardening_manifest_tpl = TEMPLATE_DIR.joinpath("hardening_manifest.tpl")
-    hardening_manifest_path = TEST_DATA_DIR.joinpath("harrdening_manifest.yaml")
+    hardening_manifest_path = TEST_DATA_DIR.joinpath("hardening_manifest.yaml")
 
     content = {
         "name": "opensource/metrostar/singleuser",
