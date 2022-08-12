@@ -18,7 +18,7 @@ jobs:
 
       - name: Install pre-commit
         run: |
-          pip install pre-commit jupyter pygments==2.10.0 markupsafe==2.0.1
+          pip install pre-commit
 
       - name: Run pre-commit hooks
         run: pre-commit run --all
