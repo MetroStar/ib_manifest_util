@@ -9,6 +9,7 @@ dependencies:
   - pip
   - pre-commit
   - pytest
+  - pytest-cov
   - python
   - requests
   - ruamel.yaml
