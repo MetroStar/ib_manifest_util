@@ -1,11 +1,9 @@
 import requests
-from ruamel.yaml import YAML
-
-yaml = YAML(typ="safe")
+from ib_manifest_util.util import load_yaml
 
 
 def download_packages():
-    manifest = yaml.load(open("../hardening_manifest.yaml").read())
+    manifest = load_yaml("../hardening_manifest.yaml")
 
     urls = [x["url"] for x in manifest["resources"]]
 
