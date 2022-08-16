@@ -1,11 +1,25 @@
+from pathlib import Path
+
 import requests
+
 from ib_manifest_util.util import load_yaml
 
 
-def download_packages():
-    manifest = load_yaml("../hardening_manifest.yaml")
+def download_packages(
+    manifest_path: str | Path = "../hardening_manifest.yaml", urls: list = None
+):
+    """Download conda packages from a manifest file or a list of urls.
 
-    urls = [x["url"] for x in manifest["resources"]]
+    Args:
+        manifest_path: str | Path
+            Path to manifest file.
+        urls: list
+            Optional list of package urls to download.  Supersedes manifest_path.
+
+    """
+    if not urls:
+        manifest = load_yaml(manifest_path)
+        urls = [x["url"] for x in manifest["resources"]]
 
     for i, url in enumerate(urls):
         fname = url.split("/")[-1].lstrip("_")
