@@ -6,7 +6,7 @@ from ruamel.yaml import YAML
 from ib_manifest_util import PACKAGE_DIR, TEST_DATA_DIR
 from ib_manifest_util.download_conda_packages import download_packages
 
-SMALL_PACKAGE_URL_AND_FILENAME = [
+small_package_url_and_filename = [
     "https://conda.anaconda.org/conda-forge/noarch/backports-1.0-py_2.tar.bz2",
     "backports-1.0-py_2.tar.bz2",
 ]
@@ -58,8 +58,8 @@ def assert_file_exists_and_has_data_then_delete(
 def test_download_package_correct_url_list():
     """Download a package and check that it was written successfully."""
 
-    url_l = [SMALL_PACKAGE_URL_AND_FILENAME[0]]
-    expected_file_path = Path(PACKAGE_DIR, SMALL_PACKAGE_URL_AND_FILENAME[1])
+    url_l = [small_package_url_and_filename[0]]
+    expected_file_path = Path(PACKAGE_DIR, small_package_url_and_filename[1])
 
     # Write the file
     download_packages(urls=url_l)
@@ -104,8 +104,8 @@ def test_download_package_from_manifest():
 def test_download_package_urls_and_manifest():
     """Test both url list and manifest path passed to function."""
 
-    url_l = [SMALL_PACKAGE_URL_AND_FILENAME[0]]
-    expected_file_path = Path(PACKAGE_DIR, SMALL_PACKAGE_URL_AND_FILENAME[1])
+    url_l = [small_package_url_and_filename[0]]
+    expected_file_path = Path(PACKAGE_DIR, small_package_url_and_filename[1])
 
     download_packages(
         manifest_path=Path(TEST_DATA_DIR, "hardening_manifest.yaml"), urls=url_l
