@@ -31,9 +31,7 @@ def test_download_package_correct_url_list():
 
 def test_download_package_incorrect_url_list():
     """Try downloading a dummy url and check that it was not written."""
-    url_l = [
-        "https://github.com/dummy_url_for_testing.tar.gz"
-    ]
+    url_l = ["https://github.com/dummy_url_for_testing.tar.gz"]
     expected_file_name = "dummy_url_for_testing.tar.gz"
 
     # Try to write the file
