@@ -1,48 +1,23 @@
-from ib_manifest_util import TEMPLATE_DIR, TEST_DATA_DIR
-from ib_manifest_util.util import write_templatized_file
+from ib_manifest_util.config import HardeningManifestConfig
+from ib_manifest_util.util import load_yaml, write_templatized_file
 
 
 def test_write_templatized_file_hardening():
-    hardening_manifest_tpl = "hardening_manifest.tpl"
-    hardening_manifest_path = TEST_DATA_DIR.joinpath("hardening_manifest.yaml")
+    """Test the ability to write the hardening_manifest.yaml file with a template."""
+    hmc = HardeningManifestConfig()
 
-    content = {
-        "apiVersion": "v1",
-        "name": "opensource/metrostar/singleuser",
-        "tags": ["singeluser_v12"],
-        "args": {
-            "base_image": "opensource/metrostar/miniconda",
-            "base_tag": "4.12.0",
-        },
-        "labels": {
-            "title": "singleuser",
-            "description": "A base-notebook Singleuser image to use with JupyterHub",
-            "licenses": "BSD 3-Clause",
-            "url": "https://repo1.dso.mil/dsop/opensource/metrostar/singleuser",
-            "vendor": "MetroStar Systems",
-            "version": "singleuser_v11",
-            "keywords": "conda,python,jupyter,jupyterhub,jupyterlab",
-            "type": "opensource",
-            "name": "metrostar",
-        },
-        "resources": [
-            {
-                "url": "https://github.com/dirkcgrunwald/jupyter_codeserver_proxy-/archive/5596bc9c2fbd566180545fa242c659663755a427.tar.gz",
-                "filename": "code_server.tar.gz",
-                "validation": {
-                    "type": "sha256",
-                    "value": "7a286d6f201ae651368b65505cba7b0a137c81b2ac0fd637160d082bb14db032",
-                },
-            }
-        ],
-        "maintainers": [
-            {
-                "email": "jvelando@metrostarsystems.com",
-                "name": "Jonathan Velando",
-                "username": "jvelando",
-                "cht_member": "false",
-            }
-        ],
-    }
+    write_templatized_file(
+        template_filename=hmc.template_name,
+        output_path=hmc.output_path,
+        content=hmc.content,
+    )
 
-    write_templatized_file(hardening_manifest_tpl, hardening_manifest_path, content)
+    # Check that the file was written
+    assert (
+        hmc.output_path.exists()
+    ), f"Hardening manifest file should exist here: {hmc.output_path}"
+
+    # Compare file content with expected content
+    output_manifest = load_yaml(hmc.output_path)
+    expected_manifest = load_yaml(hmc.output_expected_path)
+    assert output_manifest == expected_manifest
