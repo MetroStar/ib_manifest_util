@@ -3,6 +3,7 @@ from pathlib import Path
 
 import requests
 
+from ib_manifest_util import PACKAGE_DIR
 from ib_manifest_util.util import load_yaml
 
 logger = logging.getLogger(__name__)
@@ -27,7 +28,7 @@ def download_packages(manifest_path: str | Path = None, urls: list = None):
         urls = [x["url"] for x in manifest["resources"]]
     # neither
     elif not urls and not manifest_path:
-        manifest_path = "../hardening_manifest.yaml"
+        manifest_path = Path(PACKAGE_DIR, "hardening_manifest.yaml")
         manifest = load_yaml(manifest_path)
         urls = [x["url"] for x in manifest["resources"]]
     # both
@@ -45,7 +46,7 @@ def download_packages(manifest_path: str | Path = None, urls: list = None):
                 logger.warning(message)
                 print(message)
             else:
-                with open(f"../{fname}", "wb") as f:
+                with open(Path(PACKAGE_DIR, fname), "wb") as f:
                     f.write(r.content)
 
 

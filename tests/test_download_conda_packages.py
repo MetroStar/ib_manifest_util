@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 from ruamel.yaml import YAML
 
+from ib_manifest_util import TEST_DATA_DIR
 from ib_manifest_util.download_conda_packages import download_packages
 
 SMALL_PACKAGE_URL_AND_FILENAME = [
@@ -87,7 +88,7 @@ def test_download_package_from_manifest():
     """Download packages from a manifest file and check that all files were written successfully."""
 
     # Pass a manifest file from the tests/data dir to download_packages()
-    manifest_file_path = Path("data/hardening_manifest.yaml")
+    manifest_file_path = Path(TEST_DATA_DIR, "hardening_manifest.yaml")
     download_packages(manifest_path=manifest_file_path)
 
     # Get list of file names for checking
@@ -106,7 +107,9 @@ def test_download_package_urls_and_manifest():
     url_l = [SMALL_PACKAGE_URL_AND_FILENAME[0]]
     expected_file_path = Path("../", SMALL_PACKAGE_URL_AND_FILENAME[1])
 
-    download_packages(manifest_path="data/hardening_manifest.yaml", urls=url_l)
+    download_packages(
+        manifest_path=Path(TEST_DATA_DIR, "hardening_manifest.yaml"), urls=url_l
+    )
 
     # Check that small package in the url list was downloaded
     assert_file_exists_and_has_data_then_delete(file_path=expected_file_path)
