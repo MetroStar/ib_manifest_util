@@ -16,15 +16,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up conda
-        uses: conda-incubator/setup-miniconda@master
+      - name: Install Conda environment with Micromamba
+        uses: mamba-org/provision-with-micromamba@main
         with:
-          miniforge-variant: Miniforge3
-          miniforge-version: latest
-          activate-environment: ib_manifest_env
+          cache-downloads: true
+          cache-env: true
           environment-file: environment.yml
-          python-version: ${{ matrix.python-version }}
-          auto-activate-base: false
+          environment-name: ib_manifest_env
           channels: conda-forge
           channel-priority: strict
 
