@@ -44,7 +44,6 @@ def download_packages(manifest_path: str | Path = None, urls: list = None):
             if r.status_code == 404:
                 message = f"URL '{url}'\n was not found.  Package was not downloaded."
                 logger.warning(message)
-                print(message)
             else:
                 with open(Path(PACKAGE_DIR, fname), "wb") as f:
                     f.write(r.content)

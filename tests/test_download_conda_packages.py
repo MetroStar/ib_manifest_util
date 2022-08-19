@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from ruamel.yaml import YAML
 
-from ib_manifest_util import TEST_DATA_DIR
+from ib_manifest_util import PACKAGE_DIR, TEST_DATA_DIR
 from ib_manifest_util.download_conda_packages import download_packages
 
 SMALL_PACKAGE_URL_AND_FILENAME = [
@@ -58,8 +58,8 @@ def assert_file_exists_and_has_data_then_delete(
 def test_download_package_correct_url_list():
     """Download a package and check that it was written successfully."""
 
-    url_l = list(SMALL_PACKAGE_URL_AND_FILENAME[0])
-    expected_file_path = Path("../", SMALL_PACKAGE_URL_AND_FILENAME[1])
+    url_l = [SMALL_PACKAGE_URL_AND_FILENAME[0]]
+    expected_file_path = Path(PACKAGE_DIR, SMALL_PACKAGE_URL_AND_FILENAME[1])
 
     # Write the file
     download_packages(urls=url_l)
@@ -78,7 +78,7 @@ def test_download_package_incorrect_url_list():
     download_packages(urls=url_l)
 
     # Check that the package file is missing
-    expected_file = Path("../", expected_file_name)
+    expected_file = Path(PACKAGE_DIR, expected_file_name)
     assert (
         not expected_file.exists()
     ), "Conda package should not be written to the expected path because the url was a dummy."
@@ -97,7 +97,7 @@ def test_download_package_from_manifest():
 
     # Check that files were downloaded and then delete them (clean up)
     for fn in file_names:
-        expected_file_path = Path("..", fn)
+        expected_file_path = Path(PACKAGE_DIR, fn)
         assert_file_exists_and_has_data_then_delete(file_path=expected_file_path)
 
 
@@ -105,7 +105,7 @@ def test_download_package_urls_and_manifest():
     """Test both url list and manifest path passed to function."""
 
     url_l = [SMALL_PACKAGE_URL_AND_FILENAME[0]]
-    expected_file_path = Path("../", SMALL_PACKAGE_URL_AND_FILENAME[1])
+    expected_file_path = Path(PACKAGE_DIR, SMALL_PACKAGE_URL_AND_FILENAME[1])
 
     download_packages(
         manifest_path=Path(TEST_DATA_DIR, "hardening_manifest.yaml"), urls=url_l
@@ -115,7 +115,7 @@ def test_download_package_urls_and_manifest():
     assert_file_exists_and_has_data_then_delete(file_path=expected_file_path)
 
     # Check that one of the manifest packages was not downloaded
-    expected_file = Path("../tzdata-2022a-h191b570_0.tar.bz2")
+    expected_file = Path(PACKAGE_DIR, "tzdata-2022a-h191b570_0.tar.bz2")
     assert (
         not expected_file.exists()
     ), "Conda package should not be written to the expected path because manifest urls should not have been used."
@@ -128,7 +128,7 @@ def test_download_package_no_urls_no_manifest():
     If one does not exist, test for FileNotFoundError.
 
     """
-    manifest_path = Path("../hardening_manifest.yaml")
+    manifest_path = Path(PACKAGE_DIR, "hardening_manifest.yaml")
     if manifest_path.exists():
         download_packages()
 
@@ -140,7 +140,7 @@ def test_download_package_no_urls_no_manifest():
 
         # Check that files were downloaded and then delete them (clean up)
         for fn in file_names:
-            expected_file_path = Path("..", fn)
+            expected_file_path = Path(PACKAGE_DIR, fn)
             assert_file_exists_and_has_data_then_delete(file_path=expected_file_path)
     else:
         with pytest.raises(expected_exception=FileNotFoundError):
