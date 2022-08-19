@@ -1,13 +1,23 @@
-from ib_manifest_util import DEVELOPMENT_DIR, TEST_DATA_DIR
+from ib_manifest_util import DEVELOPMENT_DIR, TEMPLATE_DIR, TEST_DATA_DIR
 
 
 class HardeningManifestConfig:
-    """"""
+    """A class to hold the hardening manifest config_class data.
+
+    Attributes:
+        template_name: str
+        template_dir: str | Path
+        output_path: str | Path
+        expected_output_path: str | Path
+        content: dict
+
+    """
 
     def __init__(self):
         self.template_name = "hardening_manifest.tpl"
+        self.template_dir = TEMPLATE_DIR
         self.output_path = DEVELOPMENT_DIR.joinpath("hardening_manifest.yaml")
-        self.output_expected_path = TEST_DATA_DIR.joinpath(
+        self.expected_output_path = TEST_DATA_DIR.joinpath(
             "hardening_manifest_expected.yaml"
         )
         self.content = {
@@ -48,3 +58,24 @@ class HardeningManifestConfig:
                 }
             ],
         }
+
+
+class DockerCondaConfig:
+    """A class to hold the Docker config_class data.
+
+    Attributes:
+    template_name: str
+    template_dir: str | Path
+    output_path: str | Path
+    expected_output_path: str | Path
+    content: dict
+
+    """
+
+    def __init__(self):
+        self.template_name = "Dockerfile_conda.tpl"
+        self.template_dir = TEMPLATE_DIR
+        self.output_path = DEVELOPMENT_DIR.joinpath("Dockerfile")
+        self.expected_output_path = TEST_DATA_DIR.joinpath("dockerfile_expected")
+        # TODO: Fill with content
+        self.content = {}
