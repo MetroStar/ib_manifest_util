@@ -1,8 +1,34 @@
 from pathlib import Path
 
 import pytest
+from ruamel.yaml import YAML
 
 from ib_manifest_util.download_conda_packages import download_packages
+
+SMALL_PACKAGE_URL_AND_FILENAME = [
+    "https://conda.anaconda.org/conda-forge/noarch/backports-1.0-py_2.tar.bz2",
+    "backports-1.0-py_2.tar.bz2",
+]
+
+
+def load_test_yaml(file_path: str | Path) -> dict:
+    """Load a yaml file.
+
+    This provides a method for loading yaml files independent of utils.load_yaml.
+
+    Args:
+        file_path: str | Path
+            Path to yaml file.
+
+    Returns: dict
+    """
+    yaml_loader = YAML(typ="safe")
+    file_path = Path(file_path).resolve()
+    if file_path.exists():
+        with open(file_path, "r") as f:
+            return yaml_loader.load(f)
+    else:
+        raise FileNotFoundError
 
 
 def assert_file_exists_and_has_data_then_delete(
@@ -30,10 +56,9 @@ def assert_file_exists_and_has_data_then_delete(
 
 def test_download_package_correct_url_list():
     """Download a package and check that it was written successfully."""
-    url_l = [
-        "https://github.com/dirkcgrunwald/jupyter_codeserver_proxy-/archive/5596bc9c2fbd566180545fa242c659663755a427.tar.gz"
-    ]
-    expected_file_path = Path("../5596bc9c2fbd566180545fa242c659663755a427.tar.gz")
+
+    url_l = list(SMALL_PACKAGE_URL_AND_FILENAME[0])
+    expected_file_path = Path("../", SMALL_PACKAGE_URL_AND_FILENAME[1])
 
     # Write the file
     download_packages(urls=url_l)
@@ -44,6 +69,7 @@ def test_download_package_correct_url_list():
 
 def test_download_package_incorrect_url_list():
     """Try downloading a dummy url and check that it was not written."""
+
     url_l = ["https://github.com/dummy_url_for_testing.tar.gz"]
     expected_file_name = "dummy_url_for_testing.tar.gz"
 
@@ -58,18 +84,61 @@ def test_download_package_incorrect_url_list():
 
 
 def test_download_package_from_manifest():
+    """Download packages from a manifest file and check that all files were written successfully."""
+
     # Pass a manifest file from the tests/data dir to download_packages()
-    manifest_file_path = "data/hardening_manifest.yaml"
+    manifest_file_path = Path("data/hardening_manifest.yaml")
     download_packages(manifest_path=manifest_file_path)
 
-    # Just check that the last file was downloaded
-    expected_file_path = Path("../tzdata-2022a-h191b570_0.tar.bz2")
-    assert_file_exists_and_has_data_then_delete(file_path=expected_file_path)
+    # Get list of file names for checking
+    manifest = load_test_yaml(file_path=manifest_file_path)
+    file_names = [x["url"].split("/")[-1].lstrip("_") for x in manifest["resources"]]
+
+    # Check that files were downloaded and then delete them (clean up)
+    for fn in file_names:
+        expected_file_path = Path("..", fn)
+        assert_file_exists_and_has_data_then_delete(file_path=expected_file_path)
 
 
 def test_download_package_urls_and_manifest():
-    pass
+    """Test both url list and manifest path passed to function."""
+
+    url_l = [SMALL_PACKAGE_URL_AND_FILENAME[0]]
+    expected_file_path = Path("../", SMALL_PACKAGE_URL_AND_FILENAME[1])
+
+    download_packages(manifest_path="data/hardening_manifest.yaml", urls=url_l)
+
+    # Check that small package in the url list was downloaded
+    assert_file_exists_and_has_data_then_delete(file_path=expected_file_path)
+
+    # Check that one of the manifest packages was not downloaded
+    expected_file = Path("../tzdata-2022a-h191b570_0.tar.bz2")
+    assert (
+        not expected_file.exists()
+    ), "Conda package should not be written to the expected path because manifest urls should not have been used."
 
 
 def test_download_package_no_urls_no_manifest():
-    pass
+    """Test neither url list nor manifest path passed to function.
+
+    download_packages() should look for the default manifest file in the parent directory.
+    If one does not exist, test for FileNotFoundError.
+
+    """
+    manifest_path = Path("../hardening_manifest.yaml")
+    if manifest_path.exists():
+        download_packages()
+
+        # Get list of file names for checking
+        manifest = load_test_yaml(file_path=manifest_path)
+        file_names = [
+            x["url"].split("/")[-1].lstrip("_") for x in manifest["resources"]
+        ]
+
+        # Check that files were downloaded and then delete them (clean up)
+        for fn in file_names:
+            expected_file_path = Path("..", fn)
+            assert_file_exists_and_has_data_then_delete(file_path=expected_file_path)
+    else:
+        with pytest.raises(expected_exception=FileNotFoundError):
+            download_packages()
