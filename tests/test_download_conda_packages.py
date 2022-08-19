@@ -6,6 +6,7 @@ from ib_manifest_util.download_conda_packages import download_packages
 
 
 def test_download_package_correct_url_list():
+    """Download a package and check that it was written successfully."""
     url_l = [
         "https://github.com/dirkcgrunwald/jupyter_codeserver_proxy-/archive/5596bc9c2fbd566180545fa242c659663755a427.tar.gz"
     ]
@@ -29,9 +30,20 @@ def test_download_package_correct_url_list():
 
 
 def test_download_package_incorrect_url_list():
-    # Same as above, but modify the url so it fails
-    # Modify download_packages to catch the error
-    pass
+    """Try downloading a dummy url and check that it was not written."""
+    url_l = [
+        "https://github.com/dummy_url_for_testing.tar.gz"
+    ]
+    expected_file_name = "dummy_url_for_testing.tar.gz"
+
+    # Try to write the file
+    download_packages(urls=url_l)
+
+    # Check that the package file is missing
+    expected_file = Path("../", expected_file_name)
+    assert (
+        not expected_file.exists()
+    ), "Conda package should not be written to the expected path because the url was a dummy."
 
 
 def test_download_package_from_manifest():
