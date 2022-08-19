@@ -39,3 +39,11 @@ def test_download_package_from_manifest():
     # Check that the packages were downloaded
     # Remove the packages (clean up)
     pass
+
+
+def test_download_package_urls_and_manifest():
+    pass
+
+
+def test_download_package_no_urls_no_manifest():
+    pass
