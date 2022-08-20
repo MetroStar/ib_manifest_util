@@ -75,7 +75,7 @@ def run_subprocess(command: str):
         sys.stdout.write(line.decode("utf-8"))
 
 
-def download_file(url: str):
+def download_file(url: str) -> str:
     """Download a file from url.
     Downloads the files to the current directory and saves as the filename
     found in the url.
@@ -83,10 +83,15 @@ def download_file(url: str):
     Args:
         url: str
             URL location to be downloaded
+
+    Returns: str
     """
     # extract the filename to save as locally
     filename = Path(urlparse(url).path).name
+
     # download the file
     urlretrieve(url, filename)
 
     logger.info(f"Downloaded file {filename} from {url}.")
+
+    return filename

@@ -1,5 +1,10 @@
+import urllib
+from pathlib import Path
+
+import pytest
+
 from ib_manifest_util import TEMPLATE_DIR, TEST_DATA_DIR
-from ib_manifest_util.util import write_templatized_file
+from ib_manifest_util.util import download_file, write_templatized_file
 
 
 def test_write_templatized_file_hardening():
@@ -46,3 +51,40 @@ def test_write_templatized_file_hardening():
     }
 
     write_templatized_file(hardening_manifest_tpl, hardening_manifest_path, content)
+
+
+def test_download_file_good_url():
+    """Test downloading good URLs."""
+
+    url = "https://conda.anaconda.org/conda-forge/noarch/backports-1.0-py_2.tar.bz2"
+    f_name = download_file(url=url)
+
+    assert f_name == "backports-1.0-py_2.tar.bz2", "Filename should match name in URL."
+
+    f_path = Path(f_name).resolve()
+    assert f_path.exists(), f"File should be written to {f_path}."
+
+    size = f_path.stat().st_size
+    assert 4000 > size > 3000, "File size should be around 3.6kB."
+
+    # Remove the file (clean up)
+    f_path.unlink()
+
+
+def test_download_file_bad_url():
+    """Test downloading bad URLs with typos, incomplete paths, etc."""
+
+    # Unknown URL type: ValueError (Missing https://)
+    url = "conda.anaconda.org"
+    with pytest.raises(ValueError):
+        download_file(url=url)
+
+    # Forbidden (No path to file)
+    url = "https://conda.anaconda.org"
+    with pytest.raises(urllib.error.HTTPError):
+        download_file(url=url)
+
+    # Not found (Dummy package name)
+    url = "https://conda.anaconda.org/conda-forge/noarch/dd812b10e81f8afcf74310a39b69fca49c27d847.tar.bz2"
+    with pytest.raises(urllib.error.HTTPError):
+        download_file(url=url)
