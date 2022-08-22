@@ -1,5 +1,26 @@
+from pathlib import Path
+
+from ruamel.yaml import YAML
+
 from ib_manifest_util.config import DockerCondaConfig, HardeningManifestConfig
-from ib_manifest_util.util import load_yaml, write_templatized_file
+from ib_manifest_util.util import write_templatized_file
+
+
+def load_yaml_for_test(file_path: str | Path) -> dict:
+    """Load a yaml file.
+    This provides a method for loading yaml files independent of utils.load_yaml.
+    Args:
+        file_path: str | Path
+            Path to yaml file.
+    Returns: dict
+    """
+    yaml_loader = YAML(typ="safe")
+    file_path = Path(file_path).resolve()
+    if file_path.exists():
+        with open(file_path, "r") as f:
+            return yaml_loader.load(f)
+    else:
+        raise FileNotFoundError
 
 
 def write_templatized_file_test(config_class):
@@ -18,8 +39,8 @@ def write_templatized_file_test(config_class):
     ), f"Templatized file should exist here: {config_class.output_path}"
 
     # Compare file content with expected content
-    output = load_yaml(config_class.output_path)
-    expected = load_yaml(config_class.expected_output_path)
+    output = load_yaml_for_test(config_class.output_path)
+    expected = load_yaml_for_test(config_class.expected_output_path)
     assert output == expected
 
 
