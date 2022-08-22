@@ -65,7 +65,7 @@ def test_download_file_good_url():
     assert f_path.exists(), f"File should be written to {f_path}."
 
     size = f_path.stat().st_size
-    assert 4000 > size > 3000, "File size should be around 3.6kB."
+    assert 3000 < size < 4000, "File size should be around 3.6kB."
 
     # Remove the file (clean up)
     f_path.unlink()
