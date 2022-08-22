@@ -12,7 +12,7 @@ small_package_url_and_filename = [
 ]
 
 
-def load_test_yaml(file_path: str | Path) -> dict:
+def load_yaml_for_tests(file_path: str | Path) -> dict:
     """Load a yaml file.
 
     This provides a method for loading yaml files independent of utils.load_yaml.
@@ -92,7 +92,7 @@ def test_download_package_from_manifest():
     download_packages(manifest_path=manifest_file_path)
 
     # Get list of file names for checking
-    manifest = load_test_yaml(file_path=manifest_file_path)
+    manifest = load_yaml_for_tests(file_path=manifest_file_path)
     file_names = [x["url"].split("/")[-1].lstrip("_") for x in manifest["resources"]]
 
     # Check that files were downloaded and then delete them (clean up)
@@ -133,7 +133,7 @@ def test_download_package_no_urls_no_manifest():
         download_packages()
 
         # Get list of file names for checking
-        manifest = load_test_yaml(file_path=manifest_path)
+        manifest = load_yaml_for_tests(file_path=manifest_path)
         file_names = [
             x["url"].split("/")[-1].lstrip("_") for x in manifest["resources"]
         ]
