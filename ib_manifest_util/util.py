@@ -67,6 +67,7 @@ def load_yaml(file_path: str | Path, loader_type: str = "safe") -> dict:
 
 def run_subprocess(command: str):
     """Run generic subprocess command.
+
     Args:
         command: Command to be run as a subprocess
     """
@@ -75,23 +76,30 @@ def run_subprocess(command: str):
         sys.stdout.write(line.decode("utf-8"))
 
 
-def download_file(url: str) -> str:
-    """Download a file from url.
+def download_files(urls: str | list) -> list:
+    """Download files from a list of urls.
+
     Downloads the files to the current directory and saves as the filename
-    found in the url.
+    found in the urls.
 
     Args:
-        url: str
-            URL location to be downloaded
+        urls: URLs to be downloaded
 
-    Returns: str
+    Returns:
+        Names of downloaded files
     """
-    # extract the filename to save as locally
-    filename = Path(urlparse(url).path).name
+    if isinstance(urls, str):
+        urls = [urls]
 
-    # download the file
-    urlretrieve(url, filename)
+    filenames = []
+    for address in urls:
+        # extract the filename to save locally
+        filename = Path(urlparse(address).path).name
 
-    logger.info(f"Downloaded file {filename} from {url}.")
+        # download the file
+        urlretrieve(address, Path(filename))
+        filenames.append(filename)
 
-    return filename
+        logger.info(f"Downloaded file {filename} from {address}.")
+
+    return filenames
