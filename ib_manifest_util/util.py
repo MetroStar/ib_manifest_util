@@ -65,6 +65,26 @@ def load_yaml(file_path: str | Path, loader_type: str = "safe") -> dict:
         raise FileNotFoundError
 
 
+def dump_yaml(source_dict: dict, target_path: str | Path, dumper_type: str = "safe"):
+    """Write dict as yaml format into a target file.
+    Args:
+        source_dict: dict
+            Dictionary to dump into the target file.
+        target_path: str | Path
+            Full path to target yaml file.
+        dumper_type: str
+            Options from yaml docstring:
+                'rt'/None -> RoundTripLoader/RoundTripDumper,  (default)
+                'safe'    -> SafeLoader/SafeDumper,
+                'unsafe'  -> normal/unsafe Loader/Dumper
+                'base'    -> baseloader
+    """ 
+    yaml_dumper = YAML(typ=dumper_type)
+    
+    with open(target_path, "w") as target:
+        yaml_dumper.dump(source_dict, target)
+
+
 def run_subprocess(command: str):
     """Run generic subprocess command.
     Args:
