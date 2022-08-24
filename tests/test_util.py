@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from ib_manifest_util import TEMPLATE_DIR, TEST_DATA_DIR
-from ib_manifest_util.util import download_files, write_templatized_file
+from ib_manifest_util.util import download_files, run_subprocess, write_templatized_file
 
 
 def test_write_templatized_file_hardening():
@@ -117,3 +117,12 @@ def test_download_file_multiple_urls(cleanup):
         f_path = Path(f_name).resolve()
         cleanup.append(f_path)
         assert f_path.exists(), f"File should be written to {f_path}."
+
+
+def test_run_subprocess(capsys):
+    """Test a subprocess call."""
+    command_test = "echo hello"
+    run_subprocess(command_test)
+    captured = capsys.readouterr()
+    assert captured.err == "", "No errors should result from subprocess."
+    assert captured.out == "hello\n", "Subprocess output should match the test string."
