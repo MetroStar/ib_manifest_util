@@ -12,24 +12,21 @@ small_package_url_and_filename = [
 ]
 
 
-def load_yaml_for_tests(file_path: str | Path) -> dict:
+def load_yaml_for_tests(file_path: str | Path, loader_type: str = "safe") -> dict:
     """Load a yaml file.
 
     This provides a method for loading yaml files independent of utils.load_yaml.
 
     Args:
-        file_path: str | Path
-            Path to yaml file.
+        file_path: Path to yaml file.
+        loader_type: Type of loader to use (see ruamel.yaml).
 
     Returns: dict
     """
-    yaml_loader = YAML(typ="safe")
+    yaml_loader = YAML(typ=loader_type)
     file_path = Path(file_path).resolve()
-    if file_path.exists():
-        with open(file_path, "r") as f:
-            return yaml_loader.load(f)
-    else:
-        raise FileNotFoundError
+    with open(file_path, "r") as f:
+        return yaml_loader.load(f)
 
 
 def assert_file_exists_and_has_data_then_delete(
