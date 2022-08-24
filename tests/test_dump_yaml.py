@@ -29,6 +29,7 @@ def test_path_types():
     hardening_manifest_path = TEST_DATA_DIR.joinpath("hardening_manifest.yaml")
     
     sample_yaml = load_yaml_for_testing("sample_yaml.yaml")
+    print(sample_yaml)
     
     # Test path type str
     dump_yaml(sample_yaml, target_path=str(hardening_manifest_path), dumper_type=str("unsafe"))
