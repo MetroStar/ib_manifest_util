@@ -6,15 +6,15 @@ repos:
     - id: check-merge-conflict
     - id: check-yaml
     - id: end-of-file-fixer
-      exclude: ^data/
+      exclude: ^tests/data/
     - id: trailing-whitespace
-      exclude: ^data/
+      exclude: ^tests/data/
 
   - repo: https://github.com/psf/black
     rev: 22.3.0
     hooks:
     - id: black
-      exclude: ^data/
+      exclude: ^tests/data/
   - repo: https://github.com/pycqa/isort
     rev: 5.9.3
     hooks:
