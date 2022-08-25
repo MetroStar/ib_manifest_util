@@ -6,10 +6,13 @@ from ruamel.yaml import YAML
 from ib_manifest_util import PACKAGE_DIR, TEST_DATA_DIR
 from ib_manifest_util.download_conda_packages import download_packages
 
-small_package_url_and_filename = [
-    "https://conda.anaconda.org/conda-forge/noarch/backports-1.0-py_2.tar.bz2",
-    "backports-1.0-py_2.tar.bz2",
-]
+
+@pytest.fixture()
+def small_package_url_and_filename():
+    return (
+        "https://conda.anaconda.org/conda-forge/noarch/backports-1.0-py_2.tar.bz2",
+        "backports-1.0-py_2.tar.bz2",
+    )
 
 
 def load_yaml_for_tests(file_path: str | Path, loader_type: str = "safe") -> dict:
@@ -29,9 +32,7 @@ def load_yaml_for_tests(file_path: str | Path, loader_type: str = "safe") -> dic
         return yaml_loader.load(f)
 
 
-def assert_file_exists_and_has_data_then_delete(
-    file_path: str | Path, file_size_minimum: int = 100
-):
+def assert_exist_then_delete(file_path: str | Path, file_size_minimum: int = 100):
     """Assert that a file exists, assert that it has a minimum size, then delete it.
 
     Args:
@@ -52,7 +53,7 @@ def assert_file_exists_and_has_data_then_delete(
     expected_file.unlink()
 
 
-def test_download_package_correct_url_list():
+def test_download_package_correct_url_list(small_package_url_and_filename):
     """Download a package and check that it was written successfully."""
 
     url_l = [small_package_url_and_filename[0]]
@@ -62,7 +63,7 @@ def test_download_package_correct_url_list():
     download_packages(urls=url_l)
 
     # Check that the package was downloaded
-    assert_file_exists_and_has_data_then_delete(file_path=expected_file_path)
+    assert_exist_then_delete(file_path=expected_file_path)
 
 
 def test_download_package_incorrect_url_list():
@@ -95,10 +96,10 @@ def test_download_package_from_manifest():
     # Check that files were downloaded and then delete them (clean up)
     for fn in file_names:
         expected_file_path = Path(PACKAGE_DIR, fn)
-        assert_file_exists_and_has_data_then_delete(file_path=expected_file_path)
+        assert_exist_then_delete(file_path=expected_file_path)
 
 
-def test_download_package_urls_and_manifest():
+def test_download_package_urls_and_manifest(small_package_url_and_filename):
     """Test both url list and manifest path passed to function."""
 
     url_l = [small_package_url_and_filename[0]]
@@ -109,7 +110,7 @@ def test_download_package_urls_and_manifest():
     )
 
     # Check that small package in the url list was downloaded
-    assert_file_exists_and_has_data_then_delete(file_path=expected_file_path)
+    assert_exist_then_delete(file_path=expected_file_path)
 
     # Check that one of the manifest packages was not downloaded
     expected_file = Path(PACKAGE_DIR, "tzdata-2022a-h191b570_0.tar.bz2")
@@ -123,7 +124,6 @@ def test_download_package_no_urls_no_manifest():
 
     download_packages() should look for the default manifest file in the parent directory.
     If one does not exist, test for FileNotFoundError.
-
     """
     manifest_path = Path(PACKAGE_DIR, "hardening_manifest.yaml")
     if manifest_path.exists():
@@ -138,7 +138,7 @@ def test_download_package_no_urls_no_manifest():
         # Check that files were downloaded and then delete them (clean up)
         for fn in file_names:
             expected_file_path = Path(PACKAGE_DIR, fn)
-            assert_file_exists_and_has_data_then_delete(file_path=expected_file_path)
+            assert_exist_then_delete(file_path=expected_file_path)
     else:
         with pytest.raises(expected_exception=FileNotFoundError):
             download_packages()
