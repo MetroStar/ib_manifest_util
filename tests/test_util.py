@@ -10,9 +10,9 @@ from ib_manifest_util.util import (
     download_files,
     dump_yaml,
     load_yaml,
+    run_subprocess,
     write_templatized_file,
 )
-from ib_manifest_util.util import download_files, run_subprocess, write_templatized_file
 
 
 def test_write_templatized_file_hardening():
