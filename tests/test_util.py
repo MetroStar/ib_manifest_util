@@ -30,23 +30,6 @@ def cleanup():
             item.unlink()
 
 
-def load_yaml_for_tests(file_path: str | Path, loader_type: str = "safe") -> dict:
-    """Load a yaml file.
-
-    This provides a method for loading yaml files independent of utils.load_yaml.
-
-    Args:
-        file_path: Path to yaml file.
-        loader_type: Type of loader to use (see ruamel.yaml).
-
-    Returns: dict
-    """
-    yaml_loader = YAML(typ=loader_type)
-    file_path = Path(file_path).resolve()
-    with open(file_path, "r") as f:
-        return yaml_loader.load(f)
-
-
 def write_templatized_file_test(config_class):
     """Test ability to write file with a template.
 
@@ -69,8 +52,8 @@ def write_templatized_file_test(config_class):
     ), f"Templatized file should exist here: {config_class.output_path}"
 
     # Compare file content with expected content
-    output = load_yaml_for_tests(config_class.output_path)
-    expected = load_yaml_for_tests(config_class.expected_output_path)
+    output = load_yaml(config_class.output_path)
+    expected = load_yaml(config_class.expected_output_path)
     assert output == expected
 
 
