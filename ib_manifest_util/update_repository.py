@@ -2,7 +2,7 @@ import logging
 import shutil
 from pathlib import Path
 
-from ib_manifest_util.create_dockerfile import write_dockerfile
+from ib_manifest_util.dockerfiles_old import write_dockerfile
 from ib_manifest_util.create_hardening_manifest import (
     create_ib_manifest,
     create_local_conda_channel,
@@ -20,6 +20,7 @@ def update_repo(
     startup_scripts_path: str | Path | None = None,
     output_hardening_path: str | Path | None = None,
     output_dockerfile_path: str | Path | None = None,
+    dockerfile_template_path: str | Path = None,
 ):
     """High level function to update an Iron Bank repository with a new environment.
 
@@ -124,6 +125,7 @@ def update_repo(
         startup_scripts,
         run_startup_scripts,
         output_path=output_dockerfile_path,
+        dockerfile_template_path = dockerfile_template_path,
     )
 
     # clean up ib_manifest.yaml
