@@ -2,12 +2,12 @@ import logging
 import shutil
 from pathlib import Path
 
-from ib_manifest_util.dockerfiles_old import write_dockerfile
 from ib_manifest_util.create_hardening_manifest import (
     create_ib_manifest,
     create_local_conda_channel,
     update_hardening_manifest,
 )
+from ib_manifest_util.dockerfiles import write_dockerfile
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -46,6 +46,8 @@ def update_repo(
             overwrite the version in the repo
         output_dockerfile_path: output path for the new `Dockerfile`. Use `None` to
             overwrite the version in the repo
+    Returns:
+        None
     """
     # ensure repo_dir is a Path object
     if isinstance(repo_dir, str):
@@ -125,7 +127,7 @@ def update_repo(
         startup_scripts,
         run_startup_scripts,
         output_path=output_dockerfile_path,
-        dockerfile_template_path = dockerfile_template_path,
+        dockerfile_template_path=dockerfile_template_path,
     )
 
     # clean up ib_manifest.yaml
