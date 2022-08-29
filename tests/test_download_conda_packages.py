@@ -1,10 +1,10 @@
 from pathlib import Path
 
 import pytest
-from ruamel.yaml import YAML
 
 from ib_manifest_util import PACKAGE_DIR, TEST_DATA_DIR
 from ib_manifest_util.download_conda_packages import download_packages
+from ib_manifest_util.util import load_yaml
 
 
 @pytest.fixture()
@@ -13,23 +13,6 @@ def small_package_url_and_filename():
         "https://conda.anaconda.org/conda-forge/noarch/backports-1.0-py_2.tar.bz2",
         "backports-1.0-py_2.tar.bz2",
     )
-
-
-def load_yaml_for_tests(file_path: str | Path, loader_type: str = "safe") -> dict:
-    """Load a yaml file.
-
-    This provides a method for loading yaml files independent of utils.load_yaml.
-
-    Args:
-        file_path: Path to yaml file.
-        loader_type: Type of loader to use (see ruamel.yaml).
-
-    Returns: dict
-    """
-    yaml_loader = YAML(typ=loader_type)
-    file_path = Path(file_path).resolve()
-    with open(file_path, "r") as f:
-        return yaml_loader.load(f)
 
 
 def assert_exist_then_delete(file_path: str | Path, file_size_minimum: int = 100):
@@ -90,7 +73,7 @@ def test_download_package_from_manifest():
     download_packages(manifest_path=manifest_file_path)
 
     # Get list of file names for checking
-    manifest = load_yaml_for_tests(file_path=manifest_file_path)
+    manifest = load_yaml(file_path=manifest_file_path)
     file_names = [x["url"].split("/")[-1].lstrip("_") for x in manifest["resources"]]
 
     # Check that files were downloaded and then delete them (clean up)
@@ -130,7 +113,7 @@ def test_download_package_no_urls_no_manifest():
         download_packages()
 
         # Get list of file names for checking
-        manifest = load_yaml_for_tests(file_path=manifest_path)
+        manifest = load_yaml(file_path=manifest_path)
         file_names = [
             x["url"].split("/")[-1].lstrip("_") for x in manifest["resources"]
         ]
