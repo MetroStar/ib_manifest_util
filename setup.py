@@ -12,7 +12,5 @@ setup(
     version=__version__,
     install_requires=["click", "ruamel.yaml", "conda_vendor", "jinja2"],
     packages=find_packages(),
-    entry_points={
-        "console_scripts": ["ib_manifest_util = ib_manifest_util.cli:main"]
-    },
+    entry_points={"console_scripts": ["ib_manifest_util = ib_manifest_util.cli:main"]},
 )

@@ -4,6 +4,7 @@ from ruamel.yaml import YAML
 
 yaml = YAML(typ="safe")
 
+
 @click.command(
     "download",
     help="Download necessary Python packages given an Iron Bank hardening_manifest.yaml",

@@ -1,7 +1,8 @@
-import click
 import logging
 import shutil
 from pathlib import Path
+
+import click
 
 from ib_manifest_util.create_dockerfile import write_dockerfile
 from ib_manifest_util.create_hardening_manifest import (
@@ -13,32 +14,30 @@ from ib_manifest_util.create_hardening_manifest import (
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+
 @click.command(
     "update_repo",
     help="Update the local hardening manifest and Dockerfile with necessary packages given an environment file",
 )
 @click.option(
     "--repo_dir",
-    prompt="Please enter the absolute path of the Iron Bank repo to modify"
+    prompt="Please enter the absolute path of the Iron Bank repo to modify",
 )
 @click.option(
-    "--dockerfile_version",
-    prompt="Please enter the desired docker image version"
+    "--dockerfile_version", prompt="Please enter the desired docker image version"
 )
-@click.option(
-    "--local_env_path",
-    help="Path to local environment file")
+@click.option("--local_env_path", help="Path to local environment file")
 @click.option(
     "--startup_scripts_path",
-    help="(Optional) Path to .yaml file containing additional files to copy"
+    help="(Optional) Path to .yaml file containing additional files to copy",
 )
 @click.option(
     "--output_hardening_path",
-    help="(Optional) Path to location in which the hardening manifest will be placed"
+    help="(Optional) Path to location in which the hardening manifest will be placed",
 )
 @click.option(
     "--output_dockerfile_path",
-    help="(Optional) Path to location in which the Dockerfile will be placed"
+    help="(Optional) Path to location in which the Dockerfile will be placed",
 )
 def update_repo(
     repo_dir: str | Path,
