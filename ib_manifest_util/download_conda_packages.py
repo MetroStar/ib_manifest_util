@@ -1,9 +1,13 @@
+import click
 import requests
 from ruamel.yaml import YAML
 
 yaml = YAML(typ="safe")
 
-
+@click.command(
+    "download",
+    help="Download necessary Python packages given an Iron Bank hardening_manifest.yaml",
+)
 def download_packages():
     manifest = yaml.load(open("../hardening_manifest.yaml").read())
 
@@ -15,7 +19,3 @@ def download_packages():
         with requests.get(url, allow_redirects=True) as r:
             with open(f"../{fname}", "wb") as f:
                 f.write(r.content)
-
-
-if __name__ == "__main__":
-    download_packages()
