@@ -1,4 +1,3 @@
-import click
 import logging
 import shutil
 from pathlib import Path
@@ -14,6 +13,7 @@ from ib_manifest_util.create_hardening_manifest import (
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
 
 def update_repo(
     repo_dir: str | Path,

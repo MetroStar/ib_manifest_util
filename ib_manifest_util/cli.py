@@ -1,16 +1,19 @@
+from pathlib import Path
+
 import click
 import requests
 
 from ib_manifest_util.download_conda_packages import download_packages
 from ib_manifest_util.update_repository import update_repo
 from ib_manifest_util.version import __version__
-from pathlib import Path
+
 
 @click.group()
 @click.version_option(__version__)
 def main() -> None:
     """To display help and usage for subcommands, use: ib_manifest_util [COMMAND] --help"""
     pass
+
 
 @click.command(
     "update_repo",
@@ -44,11 +47,34 @@ def update_repo_cli(
     output_hardening_path: str | Path | None = None,
     output_dockerfile_path: str | Path | None = None,
 ):
-    update_repo(repo_dir, dockerfile_version, local_env_path, startup_scripts_path, output_dockerfile_path, output_dockerfile_path)
+    update_repo(
+        repo_dir,
+        dockerfile_version,
+        local_env_path,
+        startup_scripts_path,
+        output_dockerfile_path,
+        output_dockerfile_path,
+    )
 
 
-main.add_command(update_repo)
-main.add_command(download_packages)
+@click.command(
+    "download_packages",
+    help="Download necessary Python packages given an Iron Bank hardening_manifest.yaml",
+)
+@click.option(
+    "--manifest_path",
+    default="hardening_manifest.yaml",
+    help="Path to the hardening manifest from which to download packages",
+)
+@click.option("--urls", help="List of URLs to download")
+def download_packages_cli(
+    manifest_path: str | Path = "hardening_manifest.yaml", urls: list = None
+):
+    download_packages(manifest_path, urls)
+
+
+main.add_command(update_repo_cli)
+main.add_command(download_packages_cli)
 
 if __name__ == "__main__":
     main()
