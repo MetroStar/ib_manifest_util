@@ -10,6 +10,7 @@ from ib_manifest_util.util import (
     download_files,
     dump_yaml,
     load_yaml,
+    run_subprocess,
     write_templatized_file,
 )
 
@@ -198,3 +199,12 @@ def test_load_yaml_loaders():
     assert (
         hardening_manifest["apiVersion"] == "v1"
     ), "Loaded yaml file should provide correct key-value pair."
+
+
+def test_run_subprocess(capsys):
+    """Test a subprocess call."""
+    command_test = "echo hello"
+    run_subprocess(command_test)
+    captured = capsys.readouterr()
+    assert captured.err == "", "No errors should result from subprocess."
+    assert captured.out == "hello\n", "Subprocess output should match the test string."
