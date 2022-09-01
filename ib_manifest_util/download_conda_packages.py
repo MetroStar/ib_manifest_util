@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 
+import click
 import requests
 
 from ib_manifest_util import PACKAGE_DIR
@@ -9,10 +10,14 @@ from ib_manifest_util.util import load_yaml
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+@click.command(
+    "download",
+    help="Download necessary Python packages given an Iron Bank hardening_manifest.yaml",
+)
 
 def download_packages(manifest_path: str | Path = None, urls: list = None):
-    """Download conda packages from a manifest file or a list of urls.
-
+    """
+    Download conda packages from a manifest file or a list of urls.
     Choose either a manifest file or a list of urls, not both.
 
     Args:
