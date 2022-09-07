@@ -34,6 +34,7 @@ update_repository(
 ```
 
 From there, all the files you need to update the repo will be generated
+
 (`repodata.json`(s), `Dockerfile`, and `hardening_manifest.yaml`).
 
 ## Installation instructions
