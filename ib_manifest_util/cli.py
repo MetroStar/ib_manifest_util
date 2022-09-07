@@ -26,7 +26,11 @@ def main() -> None:
 @click.option(
     "--dockerfile_version", prompt="Please enter the desired docker image version"
 )
-@click.option("--local_env_path", help="Path to local environment file")
+@click.option(
+    "--local_env_path",
+    default="local_channel_env.yaml",
+    help="Path to local environment file",
+)
 @click.option(
     "--startup_scripts_path",
     help="(Optional) Path to .yaml file containing additional files to copy",
@@ -42,7 +46,7 @@ def main() -> None:
 def update_repo_cli(
     repo_dir: str | Path,
     dockerfile_version: str,
-    local_env_path: str | Path = "local_channel_env.yaml",
+    local_env_path: str | Path = None,
     startup_scripts_path: str | Path | None = None,
     output_hardening_path: str | Path | None = None,
     output_dockerfile_path: str | Path | None = None,
@@ -52,7 +56,7 @@ def update_repo_cli(
         dockerfile_version,
         local_env_path,
         startup_scripts_path,
-        output_dockerfile_path,
+        output_hardening_path,
         output_dockerfile_path,
     )
 
@@ -63,14 +67,24 @@ def update_repo_cli(
 )
 @click.option(
     "--manifest_path",
-    default="hardening_manifest.yaml",
     help="Path to the hardening manifest from which to download packages",
 )
-@click.option("--urls", help="List of URLs to download")
+@click.option(
+    "--urls",
+    help="List of URLs to download",
+    multiple=True,
+)
+@click.option(
+    "--download_path",
+    default=Path.cwd(),
+    help="Path to where the packages should be downloaded",
+)
 def download_packages_cli(
-    manifest_path: str | Path = "hardening_manifest.yaml", urls: list = None
+    manifest_path: str | Path = None,
+    urls: list = None,
+    download_path: str | Path = None,
 ):
-    download_packages(manifest_path, urls)
+    download_packages(manifest_path, urls, download_path)
 
 
 main.add_command(update_repo_cli)

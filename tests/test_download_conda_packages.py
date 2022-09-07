@@ -43,7 +43,7 @@ def test_download_package_correct_url_list(small_package_url_and_filename):
     expected_file_path = Path(PACKAGE_DIR, small_package_url_and_filename[1])
 
     # Write the file
-    download_packages(urls=url_l)
+    download_packages(urls=url_l, download_path=PACKAGE_DIR)
 
     # Check that the package was downloaded
     assert_exist_then_delete(file_path=expected_file_path)
@@ -56,7 +56,7 @@ def test_download_package_incorrect_url_list():
     expected_file_name = "dummy_url_for_testing.tar.gz"
 
     # Try to write the file
-    download_packages(urls=url_l)
+    download_packages(urls=url_l, download_path=PACKAGE_DIR)
 
     # Check that the package file is missing
     expected_file = Path(PACKAGE_DIR, expected_file_name)
@@ -70,7 +70,7 @@ def test_download_package_from_manifest():
 
     # Pass a manifest file from the tests/data dir to download_packages()
     manifest_file_path = Path(TEST_DATA_DIR, "hardening_manifest.yaml")
-    download_packages(manifest_path=manifest_file_path)
+    download_packages(manifest_path=manifest_file_path, download_path=PACKAGE_DIR)
 
     # Get list of file names for checking
     manifest = load_yaml(file_path=manifest_file_path)
@@ -89,7 +89,9 @@ def test_download_package_urls_and_manifest(small_package_url_and_filename):
     expected_file_path = Path(PACKAGE_DIR, small_package_url_and_filename[1])
 
     download_packages(
-        manifest_path=Path(TEST_DATA_DIR, "hardening_manifest.yaml"), urls=url_l
+        manifest_path=Path(TEST_DATA_DIR, "hardening_manifest.yaml"),
+        urls=url_l,
+        download_path=PACKAGE_DIR,
     )
 
     # Check that small package in the url list was downloaded
