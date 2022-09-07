@@ -12,7 +12,10 @@ logging.basicConfig(level=logging.INFO)
 HARDENING_MANIFEST_TPL = "hardening_manifest.tpl"
 
 
-def create_local_conda_channel(env_path: str | Path = "local_channel_env.yaml"):
+def create_local_conda_channel(
+    env_path: str | Path = "local_channel_env.yaml",
+    root_channel_dir: str | Path = Path("."),
+):
     """Create a local conda channel with Conda-Vendor.
 
     conda-vendor currently does not allow for a specified output path. Therefore,
@@ -26,7 +29,9 @@ def create_local_conda_channel(env_path: str | Path = "local_channel_env.yaml"):
         env_path:
             Full path to `local_channel_env.yaml` that the channel will be
             based upon. Defaults to 'local_channel_env.yaml'.
-
+        root_channel_dir:
+            The root directory where the channel will be created (not
+            including the channel directory itself)
     """
     # read the env file
     env = load_yaml(env_path)
@@ -42,11 +47,17 @@ def create_local_conda_channel(env_path: str | Path = "local_channel_env.yaml"):
     # get the channel name
     channel_name = env["name"]
 
-    output_path = Path(".").joinpath(channel_name).resolve()
+    if isinstance(root_channel_dir, str):
+        root_channel_dir = Path(root_channel_dir)
+
+    output_path = root_channel_dir.joinpath(channel_name).resolve()
 
     # remove local conda channel dir if it already exists
     # TODO: remove this when conda-vendor is no longer called from subprocess
-    if output_path.exists:
+    if output_path.exists():
+        logger.warning(
+            f"Local channel path ({output_path}) already exists, removing existing directory before creating a new the channel"
+        )
         shutil.rmtree(output_path)
 
     # run conda-vendor to create the local conda channel
