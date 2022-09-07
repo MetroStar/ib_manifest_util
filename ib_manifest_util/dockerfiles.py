@@ -29,7 +29,6 @@ def copy_docker_template_to_repo(
             be overwritten. Defaults to False.
 
     Returns:
-
         bool: True if file was successfully written
     """
 
@@ -113,6 +112,9 @@ def write_dockerfile(
         docker_template = dockerfile_template_path.name
         template_dir = dockerfile_template_path.parent.resolve()
     else:
+        logger.info(
+            f"Dockerfile not provided or found in repo, using default template, {TEMPLATE_DIR.joinpath(DOCKERFILE_TPL)}"
+        )
         docker_template = DOCKERFILE_TPL
         template_dir = TEMPLATE_DIR
     write_templatized_file(

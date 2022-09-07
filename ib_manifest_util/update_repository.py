@@ -2,12 +2,16 @@ import logging
 import shutil
 from pathlib import Path
 
+from ib_manifest_util import TEMPLATE_DIR
 from ib_manifest_util.create_hardening_manifest import (
     create_ib_manifest,
     create_local_conda_channel,
     update_hardening_manifest,
 )
 from ib_manifest_util.dockerfiles import write_dockerfile
+
+DOCKERFILE_TPL = "Dockerfile_default.tpl"
+DEFAULT_DOCKERFILE_PATH = TEMPLATE_DIR.joinpath(DOCKERFILE_TPL)
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -61,6 +65,21 @@ def update_repo(
     # in the repo
     if not output_dockerfile_path:
         output_dockerfile_path = repo_dir.joinpath("Dockerfile")
+
+    if dockerfile_template_path:
+        # ensure path is pathlib.Path
+        if isinstance(dockerfile_template_path, str):
+            dockerfile_template_path = Path(dockerfile_template_path)
+    elif repo_dir.joinpath("Dockerfile.tpl").exists():
+        dockerfile_template_path = repo_dir.joinpath("Dockerfile.tpl")
+        logger.info(
+            f"Dockerfile template not explicitly provided, using dockerfile template from repo, {dockerfile_template_path}"
+        )
+    else:
+        dockerfile_template_path = TEMPLATE_DIR.joinpath(DOCKERFILE_TPL)
+        logger.info(
+            f"Dockerfile not provided or found in repo, using default template, {dockerfile_template_path}"
+        )
 
     hardening_manifest_path = repo_dir.joinpath("hardening_manifest.yaml")
 
