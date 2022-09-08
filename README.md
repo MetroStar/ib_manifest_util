@@ -5,8 +5,7 @@
 Updating packages for a docker image in the Iron Bank Image Repository can be
 time consuming since it requires that you rebuild multiple files and run
 multiple separate processes. This tool captures all those tasks and provides
-a single function that needs to be run to update all the necessary files for
-updating.
+a single function that can be run to update all the necessary files.
 
 The high level workflow:
 1) User manually updates/adds a package into local_channel_env.yaml
@@ -33,7 +32,7 @@ update_repository(
 )
 ```
 
-From there, all the files you need to update the repo will be generated
+From there, all the files you need to update in the repo will be generated
 
 (`repodata.json`(s), `Dockerfile`, and `hardening_manifest.yaml`).
 

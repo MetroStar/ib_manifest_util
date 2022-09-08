@@ -4,12 +4,6 @@ import pytest
 
 from ib_manifest_util import TEST_DATA_DIR
 
-# @pytest.fixture
-# def repo_dir():
-#     """Pathlib Path to the sample IB repo folder"""
-#     print(f'test data dir: {TEST_DATA_DIR}')
-#     return TEST_DATA_DIR.joinpath("sample_repo")
-
 
 @pytest.fixture(scope="session")
 def repo_dir(tmp_path_factory):
