@@ -2,7 +2,7 @@ import logging
 import shutil
 from pathlib import Path
 
-from ruamel import yaml
+from ruamel.yaml import YAML
 
 from ib_manifest_util.util import load_yaml, run_subprocess, write_templatized_file
 
@@ -42,6 +42,7 @@ def create_local_conda_channel(
     env["channels"] = ["conda-forge"]
 
     with open(tempfile, "w") as f:
+        yaml = YAML(pure=True)
         yaml.dump(env, f)
 
     # get the channel name
@@ -96,6 +97,7 @@ def create_ib_manifest(file: str | Path):
     env["channels"] = ["conda-forge"]
 
     with open(tempfile, "w") as f:
+        yaml = YAML(pure=True)
         yaml.dump(env, f)
 
     # run conda-vendor to generate `ib_manifest.yaml`
