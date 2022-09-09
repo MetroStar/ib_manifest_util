@@ -14,31 +14,36 @@ from ib_manifest_util.util import (
 )
 
 
-def test_write_templatized_file_hardening(hardening_manifest_tpl, tmpdir, hardening_manifest_content):
+def test_write_templatized_file_hardening(
+    hardening_manifest_tpl, tmpdir, hardening_manifest_content
+):
     """Test writing a hardening manifest file via template"""
     template_filename = hardening_manifest_tpl.name
     template_dir = hardening_manifest_tpl.parent.resolve()
-    output_path = Path(tmpdir.join('test_hardening_manifest.yaml'))
+    output_path = Path(tmpdir.join("test_hardening_manifest.yaml"))
 
     write_templatized_file(
-        template_filename=template_filename, 
+        template_filename=template_filename,
         output_path=output_path,
         content=hardening_manifest_content,
         template_dir=template_dir,
-        )
+    )
 
-def test_write_templatized_file_dockefile_default(dockerfile_default_tpl, tmpdir, dockerfile_default_content):
+
+def test_write_templatized_file_dockefile_default(
+    dockerfile_default_tpl, tmpdir, dockerfile_default_content
+):
     """Test writing a dockerfile (default) via template"""
     template_filename = dockerfile_default_tpl.name
     template_dir = dockerfile_default_tpl.parent.resolve()
-    output_path = Path(tmpdir.join('test_dockerfile'))
+    output_path = Path(tmpdir.join("test_dockerfile"))
 
     write_templatized_file(
-        template_filename=template_filename, 
+        template_filename=template_filename,
         output_path=output_path,
         content=dockerfile_default_content,
         template_dir=template_dir,
-        )
+    )
 
 
 @pytest.mark.web

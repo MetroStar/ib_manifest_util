@@ -133,7 +133,7 @@ PR is opened.
 pytest tests -vvv
 ```
 
-Some tests require external internet access to run. These tests are marked with 
+Some tests require external internet access to run. These tests are marked with
 `web`. To run only the tests available in an air-gapped system, ue:
 
 ```bash

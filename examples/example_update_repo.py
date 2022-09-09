@@ -3,9 +3,8 @@ from pathlib import Path
 from ib_manifest_util import TEST_DATA_DIR
 from ib_manifest_util.update_repository import update_repo
 
-
-repo_dir = TEST_DATA_DIR.joinpath('sample_repo')
-output_dir = Path('.').joinpath('example_output')
+repo_dir = TEST_DATA_DIR.joinpath("sample_repo")
+output_dir = Path(".").joinpath("example_output")
 
 update_repo(
     repo_dir=repo_dir,
@@ -15,4 +14,3 @@ update_repo(
     output_dockerfile_path=output_dir.joinpath("output_dockerfile"),
     dockerfile_template_path=None,
 )
-

@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import pytest
 
 from ib_manifest_util import update_repository

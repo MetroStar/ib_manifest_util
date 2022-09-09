@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from ib_manifest_util import TEST_DATA_DIR, TEMPLATE_DIR
+from ib_manifest_util import TEMPLATE_DIR, TEST_DATA_DIR
 
 
 @pytest.fixture(scope="session")
@@ -21,10 +21,12 @@ def dockerfile_default_tpl():
     template_path = TEMPLATE_DIR.joinpath("Dockerfile_default.tpl")
     return template_path
 
+
 @pytest.fixture(scope="session")
 def hardening_manifest_tpl():
     template_path = TEMPLATE_DIR.joinpath("hardening_manifest.tpl")
     return template_path
+
 
 @pytest.fixture(scope="session")
 def hardening_manifest_content():
@@ -74,9 +76,9 @@ def dockerfile_default_content():
     content = {
         "base_image": "ironbank/opensource/metrostar/miniconda",
         "base_tag": "4.11.0",
-        "noarch_packages": ['requests-2.28.1-pyhd8ed1ab_1.tar.bz2'],
-        "linux_packages": ['python-3.10.6-h582c2e5_0_cpython.tar.bz2'],
-        "underscore_packages": ['openmp_mutex-4.5-2_gnu.tar.bz2'],
+        "noarch_packages": ["requests-2.28.1-pyhd8ed1ab_1.tar.bz2"],
+        "linux_packages": ["python-3.10.6-h582c2e5_0_cpython.tar.bz2"],
+        "underscore_packages": ["openmp_mutex-4.5-2_gnu.tar.bz2"],
         "startup_scripts": [],
         "run_startup_scripts": 'mv "/home/${NB_USER}/code_server.tar.gz" /usr/local/bin/         && mv "/home/${NB_USER}/start.sh" /usr/local/bin/',
         "copy_notebook_config": True,
@@ -85,6 +87,7 @@ def dockerfile_default_content():
     }
 
     return content
+
 
 @pytest.fixture
 def cleanup():
