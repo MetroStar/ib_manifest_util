@@ -1,4 +1,0 @@
-[tool.pytest.ini_options]
-markers = [
-    "web: internet required to run this test (deselect with '-m \"not web\"')",
-]
