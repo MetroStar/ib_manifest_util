@@ -94,22 +94,6 @@ def test_download_file_multiple_urls(cleanup):
         assert f_path.exists(), f"File should be written to {f_path}."
 
 
-# def load_yaml_for_testing(file_path: str | Path) -> dict:
-#     """Load a yaml file.
-
-#     This provides a method for loading yaml files independent of utils.load_yaml.
-#     Args:
-#         file_path: str | Path
-#             Path to yaml file.
-#     Returns: dict
-#     """
-
-#     yaml_loader = YAML(typ="safe")
-#     file_path = Path(file_path).resolve()
-#     with open(file_path, "r") as f:
-#         return yaml_loader.load(f)
-
-
 def test_dump_yaml(cleanup):
     """Test that dictionary is correctly written to .yaml file"""
     sample_yaml_path = TEST_DATA_DIR.joinpath("sample_yaml.yaml")
