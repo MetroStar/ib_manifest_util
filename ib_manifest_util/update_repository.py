@@ -2,7 +2,6 @@ import logging
 import shutil
 from pathlib import Path
 
-
 from ib_manifest_util import TEMPLATE_DIR
 from ib_manifest_util.create_hardening_manifest import (
     create_ib_manifest,
