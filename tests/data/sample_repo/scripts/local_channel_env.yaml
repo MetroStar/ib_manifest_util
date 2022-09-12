@@ -1,4 +1,4 @@
-name: sample_repo
+name: test_repo
 channels:
   - conda-forge
 dependencies:

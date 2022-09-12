@@ -1,8 +1,11 @@
 from pathlib import Path
 
+import pytest
+
 from ib_manifest_util import update_repository
 
 
+@pytest.mark.web
 def test_update_repository(repo_dir, tmpdir):
     update_repository.update_repo(
         repo_dir=repo_dir,

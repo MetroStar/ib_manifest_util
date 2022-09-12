@@ -34,11 +34,16 @@ def write_templatized_file(
 
     template_content = template.render(**content)
 
+    if isinstance(output_path, str):
+        output_path = Path(output_path)
+
+    # make the output directory if it doesn't exist
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
     with open(output_path, mode="w", encoding="utf-8") as message:
         message.write(template_content)
 
 
-# TODO: Make test
 def load_yaml(file_path: str | Path, loader_type: str = "safe") -> dict:
     """Load a yaml file after checking that it exists.
 

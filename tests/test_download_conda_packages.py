@@ -36,6 +36,7 @@ def assert_exist_then_delete(file_path: str | Path, file_size_minimum: int = 100
     expected_file.unlink()
 
 
+@pytest.mark.web
 def test_download_package_correct_url_list(small_package_url_and_filename):
     """Download a package and check that it was written successfully."""
 
@@ -49,6 +50,7 @@ def test_download_package_correct_url_list(small_package_url_and_filename):
     assert_exist_then_delete(file_path=expected_file_path)
 
 
+@pytest.mark.web
 def test_download_package_incorrect_url_list():
     """Try downloading a dummy url and check that it was not written."""
 
@@ -65,6 +67,7 @@ def test_download_package_incorrect_url_list():
     ), "Conda package should not be written to the expected path because the url was a dummy."
 
 
+@pytest.mark.web
 def test_download_package_from_manifest():
     """Download packages from a manifest file and check that all files were written successfully."""
 
@@ -82,6 +85,7 @@ def test_download_package_from_manifest():
         assert_exist_then_delete(file_path=expected_file_path)
 
 
+@pytest.mark.web
 def test_download_package_urls_and_manifest(small_package_url_and_filename):
     """Test both url list and manifest path passed to function."""
 
@@ -102,6 +106,7 @@ def test_download_package_urls_and_manifest(small_package_url_and_filename):
     ), "Conda package should not be written to the expected path because manifest urls should not have been used."
 
 
+@pytest.mark.web
 def test_download_package_no_urls_no_manifest():
     """Test neither url list nor manifest path passed to function.
 
