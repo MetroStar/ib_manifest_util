@@ -155,7 +155,7 @@ def verify_local_channel_environments(
     Args:
         local_channel_env: path to local environment yaml
         offline_mode: whether to run `conda env create` with the `--offline` flag, default is true
-        conda_binary_loc: path to a `conda` binary, default will try to location the `conda` binary by using the return value of `$ which conda`
+        conda_binary_loc: path to a `conda` binary, default will try to locate the `conda` binary by using the return value of `$ which conda`
 
     NOTE: It is assumed that the `conda-vendor vendor` command has already been run and that the `local_channel_env`
     has a single channel set to `path/to/local_channel/folder`.
@@ -178,7 +178,7 @@ def verify_local_channel_environments(
 
     if len(channels) > 1 or not Path(channels[0]).exists():
         raise ValueError(
-            f"The `channels` key for {local_channel_env} is misformatted: {channels}. It should only contain on item, the file path to the local channel folder"
+            f"The `channels` key for {local_channel_env} is misformatted: {channels}. It should only contain one item, the file path to the local channel folder"
         )
 
     if conda_binary_loc:
@@ -186,7 +186,7 @@ def verify_local_channel_environments(
             conda_binary_loc = Path(conda_binary_loc)
         if not conda_binary_loc.exists():
             raise ValueError(
-                f"The conda binary provided appears not to exist at location: {conda_binary_loc.resolve()}"
+                f"The `conda` binary provided appears not to exist at location: {conda_binary_loc.resolve()}"
             )
         conda_binary = str(conda_binary_loc)
     else:
@@ -194,8 +194,10 @@ def verify_local_channel_environments(
             # determine location of conda binary
             conda_binary = run_subprocess("which conda", return_as_str=True).strip("\n")
         except Exception as e:
-            raise e
-    logger.info(f"Using the following conda binary: {conda_binary}")
+            logger.warning(
+                "Having trouble determine the location of the `conda` binary, falling back to simply using `conda`"
+            )
+    logger.info(f"Using the following `conda` binary: {conda_binary}")
 
     create_conda_env_command = conda_binary + f" env create -f {local_channel_env}"
     remove_conda_env_command = conda_binary + f" env remove -n {name}"
@@ -209,11 +211,14 @@ def verify_local_channel_environments(
         logger.info(f"Conda environment, `{name}`, successfully created")
     except Exception as e:
         logger.error(e)
+        raise e
     finally:
-        logger.info(f"Deleting conda environment, `{name}`, from {local_channel_env}")
+        logger.info(f"Removing conda environment, `{name}`, from {local_channel_env}")
         run_subprocess(remove_conda_env_command)
-        logger.info(f"Conda environment, `{name}`, successfully deleted")
+        logger.info(f"Conda environment, `{name}`, successfully removed")
 
     logger.info(
-        "The local channel environment was successfully built (and then promptly deleted)"
+        f"The local channel environment, {local_channel_env}, was successfully created (and then promptly removed)"
     )
+
+    return True

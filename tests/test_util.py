@@ -10,6 +10,7 @@ from ib_manifest_util.util import (
     dump_yaml,
     load_yaml,
     run_subprocess,
+    verify_local_channel_environments,
     write_templatized_file,
 )
 
@@ -165,3 +166,24 @@ def test_run_subprocess(capsys):
     captured = capsys.readouterr()
     assert captured.err == "", "No errors should result from subprocess."
     assert captured.out == "hello\n", "Subprocess output should match the test string."
+
+
+def test_verify_local_channel_environment(tmp_path_factory):
+    """Test verify_local_channel_environment function."""
+
+    # create `my_local_channel_env.yaml` for this test
+    local_channel = TEST_DATA_DIR / "sample_repo/config"
+    env = {
+        "name": "my_local_channel_env",
+        "channels": [str(local_channel.resolve())],
+        "dependencies": [
+            "python",
+        ],
+    }
+
+    tmp_env_file = (
+        tmp_path_factory.mktemp("test_local_channel") / "my_local_channel_env.yaml"
+    )
+    dump_yaml(env, tmp_env_file)
+
+    assert verify_local_channel_environments(tmp_env_file)
