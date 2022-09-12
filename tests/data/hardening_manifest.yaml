@@ -4,51 +4,26 @@ name: opensource/metrostar/singleuser
 tags:
   - singeluser_v12
 args:
-  BASE_IMAGE: opensource/metrostar/miniconda
-  BASE_TAG: 4.12.0
+  BASE_IMAGE: 
+  BASE_TAG: 
 labels:
   # Name of the image
-  org.opencontainers.image.title: singleuser
-  org.opencontainers.image.description: A base-notebook Singleuser image to use with
-    JupyterHub
-  org.opencontainers.image.licenses: BSD 3-Clause
-  org.opencontainers.image.url: https://repo1.dso.mil/dsop/opensource/metrostar/singleuser
-  org.opencontainers.image.vendor: MetroStar Systems
-  org.opencontainers.image.version: singleuser_v11
-  mil.dso.ironbank.image.keywords: conda,python,jupyter,jupyterhub,jupyterlab
-  mil.dso.ironbank.image.type: opensource
-  mil.dso.ironbank.product.name: metrostar
+  org.opencontainers.image.title: 
+  org.opencontainers.image.description: 
+  org.opencontainers.image.licenses: 
+  org.opencontainers.image.url: 
+  org.opencontainers.image.vendor: 
+  org.opencontainers.image.version: 
+  mil.dso.ironbank.image.keywords: 
+  mil.dso.ironbank.image.type: 
+  mil.dso.ironbank.product.name: 
 resources:
   - url: https://github.com/dirkcgrunwald/jupyter_codeserver_proxy-/archive/5596bc9c2fbd566180545fa242c659663755a427.tar.gz
     filename: code_server.tar.gz
     validation:
       type: sha256
       value: 7a286d6f201ae651368b65505cba7b0a137c81b2ac0fd637160d082bb14db032
-  - url: https://raw.githubusercontent.com/jupyter/docker-stacks/c9546339815d832f37d5c48bbb4503371eea60e0/base-notebook/start.sh
-    filename: start.sh
-    validation:
-      type: sha256
-      value: a29a47b95df00035a78792e436a548ec11d1b2721e3281595983865a86afb84d
-  - url: https://conda.anaconda.org/conda-forge/noarch/typing-extensions-4.3.0-hd8ed1ab_0.tar.bz2
-    filename: typing-extensions-4.3.0-hd8ed1ab_0.tar.bz2
-    validation:
-      type: sha256
-      value: 57ea0e9a150b698f5a7b21b12987da7c321bb331fd07116ecced24eb1e056d2f
-  - url: https://conda.anaconda.org/conda-forge/noarch/backports-1.0-py_2.tar.bz2
-    filename: backports-1.0-py_2.tar.bz2
-    validation:
-      type: sha256
-      value: a584e690dbb042779af83abaa87a54764278c0a53bf5256ff8f5b0f0061ac283
-  - url: https://conda.anaconda.org/conda-forge/noarch/cachetools-5.0.0-pyhd8ed1ab_0.tar.bz2
-    filename: cachetools-5.0.0-pyhd8ed1ab_0.tar.bz2
-    validation:
-      type: sha256
-      value: 203cee4e606fe2b43965e390b85cb8c947ab190b2e09d49eb2074a6a2d505d6c
-  - url: https://conda.anaconda.org/conda-forge/noarch/tzdata-2022a-h191b570_0.tar.bz2
-    filename: tzdata-2022a-h191b570_0.tar.bz2
-    validation:
-      type: sha256
-      value: 74d8c1fbccae1a78c9bd2b2d1cda73df425cc28717a637198c23bd1c9b53b60e
+
 maintainers:
   - email: jvelando@metrostarsystems.com
     name: Jonathan Velando

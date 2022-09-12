@@ -62,7 +62,7 @@ def load_yaml(file_path: str | Path, loader_type: str = "safe") -> dict:
         with open(file_path, "r") as f:
             return yaml_loader.load(f)
     else:
-        raise FileNotFoundError
+        raise FileNotFoundError(f"File not found: {file_path}")
 
 
 def dump_yaml(
