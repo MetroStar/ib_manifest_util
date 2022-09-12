@@ -98,15 +98,21 @@ def dump_yaml(
         yaml_dumper.dump(source_dict, target)
 
 
-def run_subprocess(command: str):
+def run_subprocess(command: str, return_as_str=False):
     """Run generic subprocess command.
 
     Args:
         command: Command to be run as a subprocess
+        return_as_str: Return the subprocess stdout as a string instead of streaming to stdout
     """
+    encoding = "utf-8"
     process = subprocess.Popen(command.split(" "), stdout=subprocess.PIPE)
+
+    if return_as_str:
+        return process.stdout.read().decode(encoding)
+
     for line in iter(lambda: process.stdout.read(1), b""):
-        sys.stdout.write(line.decode("utf-8"))
+        sys.stdout.write(line.decode(encoding))
 
 
 def download_files(urls: str | list) -> list:
@@ -136,3 +142,78 @@ def download_files(urls: str | list) -> list:
         logger.info(f"Downloaded file {filename} from {address}.")
 
     return filenames
+
+
+def verify_local_channel_environments(
+    local_channel_env: str | Path,
+    offline_mode: bool = True,
+    conda_binary_loc: str | Path | None = None,
+):
+    """
+    Verify that the conda environment (`local_channel_env`) can be successfully created.
+
+    Args:
+        local_channel_env: path to local environment yaml
+        offline_mode: whether to run `conda env create` with the `--offline` flag, default is true
+        conda_binary_loc: path to a `conda` binary, default will try to location the `conda` binary by using the return value of `$ which conda`
+
+    NOTE: It is assumed that the `conda-vendor vendor` command has already been run and that the `local_channel_env`
+    has a single channel set to `path/to/local_channel/folder`.
+    """
+
+    logger.info(
+        "Verifying that the local channel environment can be successfully created"
+    )
+    if isinstance(local_channel_env, str):
+        local_channel_env = Path(local_channel_env)
+
+    if not local_channel_env.exists():
+        raise ValueError(
+            f"The environment file submitted appears not to exist at location: {local_channel_env.resolve()}"
+        )
+
+    env_yaml = load_yaml(local_channel_env)
+    channels = env_yaml["channels"]
+    name = env_yaml["name"]
+
+    if len(channels) > 1 or not Path(channels[0]).exists():
+        raise ValueError(
+            f"The `channels` key for {local_channel_env} is misformatted: {channels}. It should only contain on item, the file path to the local channel folder"
+        )
+
+    if conda_binary_loc:
+        if isinstance(conda_binary_loc, str):
+            conda_binary_loc = Path(conda_binary_loc)
+        if not conda_binary_loc.exists():
+            raise ValueError(
+                f"The conda binary provided appears not to exist at location: {conda_binary_loc.resolve()}"
+            )
+        conda_binary = str(conda_binary_loc)
+    else:
+        try:
+            # determine location of conda binary
+            conda_binary = run_subprocess("which conda", return_as_str=True).strip("\n")
+        except Exception as e:
+            raise e
+    logger.info(f"Using the following conda binary: {conda_binary}")
+
+    create_conda_env_command = conda_binary + f" env create -f {local_channel_env}"
+    remove_conda_env_command = conda_binary + f" env remove -n {name}"
+
+    if offline_mode:
+        create_conda_env_command += " --offline"
+
+    try:
+        logger.info(f"Creating conda environment, `{name}`, from {local_channel_env}")
+        run_subprocess(create_conda_env_command)
+        logger.info(f"Conda environment, `{name}`, successfully created")
+    except Exception as e:
+        logger.error(e)
+    finally:
+        logger.info(f"Deleting conda environment, `{name}`, from {local_channel_env}")
+        run_subprocess(remove_conda_env_command)
+        logger.info(f"Conda environment, `{name}`, successfully deleted")
+
+    logger.info(
+        "The local channel environment was successfully built (and then promptly deleted)"
+    )
