@@ -16,3 +16,6 @@ A command line tool to assist with updating and testing Iron Bank images.
 __app_name__ = "Iron Bank Manifest Utility"
 __version__ = VERSION
 __author__ = "Ryan Crow, Tyler Potts"
+
+
+DEFAULT_MANIFEST_FILENAME = "hardening_manifest.yaml"
