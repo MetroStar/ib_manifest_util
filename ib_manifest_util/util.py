@@ -173,8 +173,8 @@ def verify_local_channel_environments(
         )
 
     env_yaml = load_yaml(local_channel_env)
-    channels = env_yaml["channels"]
-    name = env_yaml["name"]
+    channels = env_yaml.get("channels", None)
+    name = env_yaml.get("name", None)
 
     if channels and len(channels) > 1 or not Path(channels[0]).exists():
         raise ValueError(
