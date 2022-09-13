@@ -190,6 +190,7 @@ def verify_local_channel_environments(
                 f"The `conda` binary provided appears not to exist at location: {conda_binary_loc.resolve()}"
             )
         conda_binary = str(conda_binary_loc)
+    # otherwise find conda binary via `which`
     else:
         try:
             # determine location of conda binary
