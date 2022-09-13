@@ -176,7 +176,7 @@ def verify_local_channel_environments(
     channels = env_yaml["channels"]
     name = env_yaml["name"]
 
-    if len(channels) > 1 or not Path(channels[0]).exists():
+    if channels and len(channels) > 1 or not Path(channels[0]).exists():
         raise ValueError(
             f"The `channels` key for {local_channel_env} is misformatted: {channels}. It should only contain one item, the file path to the local channel folder"
         )
