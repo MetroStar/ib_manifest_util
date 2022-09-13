@@ -181,6 +181,7 @@ def verify_local_channel_environments(
             f"The `channels` key for {local_channel_env} is misformatted: {channels}. It should only contain one item, the file path to the local channel folder"
         )
 
+    # if conda binary was provided, ensure that it exists
     if conda_binary_loc:
         if isinstance(conda_binary_loc, str):
             conda_binary_loc = Path(conda_binary_loc)
