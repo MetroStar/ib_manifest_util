@@ -172,12 +172,14 @@ def test_verify_local_channel_environment(tmp_path_factory):
     """Test verify_local_channel_environment function."""
 
     # create `my_local_channel_env.yaml` for this test
-    local_channel = TEST_DATA_DIR / "sample_repo/config"
+    local_channel = str((TEST_DATA_DIR / "local_channel").resolve())
+    print(local_channel)
     env = {
         "name": "my_local_channel_env",
-        "channels": [str(local_channel.resolve())],
+        "channels": [local_channel],
         "dependencies": [
             "python",
+            "python-json-logger",
         ],
     }
 

@@ -157,8 +157,14 @@ def verify_local_channel_environments(
         offline_mode: whether to run `conda env create` with the `--offline` flag, default is true
         conda_binary_loc: path to a `conda` binary, default will try to locate the `conda` binary by using the return value of `$ which conda`
 
+    Returns:
+        bool: `True` if successful, `False` if not.
+
     NOTE: It is assumed that the `conda-vendor vendor` command has already been run and that the `local_channel_env`
     has a single channel set to `path/to/local_channel/folder`.
+
+    NOTE: If the local channel folder is in the current working directory, it is also advised to prepend the folder name with `./`,
+    such as `./my_local_channel_env` to ensure that `conda` understands that this is a local channel.
     """
 
     logger.info(
@@ -197,9 +203,10 @@ def verify_local_channel_environments(
             conda_binary = run_subprocess("which conda", return_as_str=True).strip("\n")
         except Exception as e:
             logger.warning(
-                "Having trouble determine the location of the `conda` binary, falling back to simply using `conda`"
+                "Having trouble determining the location of the `conda` binary, falling back to simply using `conda`"
             )
-    logger.info(f"Using the following `conda` binary: {conda_binary}")
+            raise e
+    logger.info(f"Using the following `conda` binary: {Path(conda_binary).resolve()}")
 
     create_conda_env_command = conda_binary + f" env create -f {local_channel_env}"
     remove_conda_env_command = conda_binary + f" env remove -n {name}"
@@ -209,11 +216,14 @@ def verify_local_channel_environments(
 
     try:
         logger.info(f"Creating conda environment, `{name}`, from {local_channel_env}")
-        run_subprocess(create_conda_env_command)
+        # catch exception if command fails
+        subprocess.check_call(
+            create_conda_env_command.split(" "), stdout=sys.stdout, stderr=sys.stderr
+        )
         logger.info(f"Conda environment, `{name}`, successfully created")
     except Exception as e:
         logger.error(e)
-        raise e
+        return False
     finally:
         logger.info(f"Removing conda environment, `{name}`, from {local_channel_env}")
         run_subprocess(remove_conda_env_command)
