@@ -173,7 +173,6 @@ def test_verify_local_channel_environment(tmp_path_factory):
 
     # create `my_local_channel_env.yaml` for this test
     local_channel = str((TEST_DATA_DIR / "local_channel").resolve())
-    print(local_channel)
     env = {
         "name": "my_local_channel_env",
         "channels": [local_channel],
