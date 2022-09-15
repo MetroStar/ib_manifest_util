@@ -11,8 +11,7 @@ import {
 
 const FeatureList = [
   {
-    title: <Link to="/docs/getting-started/installation">Installation</Link>,
-    url: "/docs/getting-started/installation",
+    title: <Link to="/getting-started/installation">Installation</Link>,
     Svg: require('@site/static/img/construction.svg').default,
     imageLink: "/docs/getting-started/installation",
     description: (
@@ -23,7 +22,7 @@ const FeatureList = [
     ),
   },
   {
-    title: <Link to="/docs/getting-started/installation">Update your IB Container</Link>,
+    title: <Link to="/getting-started/installation">Update your IB Container</Link>,
     Svg: require('@site/static/img/update.svg').default,
     description: (
       <>
@@ -33,7 +32,7 @@ const FeatureList = [
     ),
   },
   {
-    title: <Link to="/docs/community/contributing">Community</Link>,
+    title: <Link to="/community/contributing">Community</Link>,
     Svg: require('@site/static/img/contribute.svg').default,
     description: (
       <>
