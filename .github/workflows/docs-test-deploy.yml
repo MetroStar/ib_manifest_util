@@ -3,7 +3,6 @@ name: Test deployment
 on:
   pull_request:
     branches:
-      - gh-pages
       - main
       - dev
     # Review gh actions docs if you want to further define triggers, paths, etc
