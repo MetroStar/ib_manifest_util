@@ -1,6 +1,0 @@
-name: test_env
-channels:
-  - conda-forge
-dependencies:
-  - python=3.10
-  - pip==22.0.3
