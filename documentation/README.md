@@ -3,6 +3,8 @@
 This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator. The following
 commands must be run from the `documentation` directory.
 
+## Building the docs locally
+
 ### Installation
 
 ```
@@ -40,3 +42,12 @@ $ GIT_USER=<Your GitHub username> yarn deploy
 ```
 
 If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+
+## Publishing the docs
+
+We are publishing docs using the `gh-pages` mechanism that's built into GitHub (thanks GitHub!). As such,  we have a
+dedicated `gh-pages` branch from which the docs are served.
+
+When a PR is opened which makes changes to files in the documentation folder, the `Test Deployment` Action will run.
+
+When a PR is merged into `dev` or `main`, the `Test Deployment` Action and the `Publish Docs` Action will run.
