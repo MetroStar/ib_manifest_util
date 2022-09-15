@@ -102,7 +102,7 @@ git checkout 0.0.5
 This will put your git repo in a detached state since you haven't created a
 new, editable branch at this location in the history. If you plan to make
 edits which will eventually become a PR, you should branch off of the live
-`main` branch.
+`dev` branch.
 
 
 ## Developer instructions
