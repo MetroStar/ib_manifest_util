@@ -1,4 +1,5 @@
 import urllib
+from distutils.command.install_egg_info import safe_name
 from pathlib import Path
 
 import pytest
@@ -168,23 +169,18 @@ def test_run_subprocess(capsys):
     assert captured.out == "hello\n", "Subprocess output should match the test string."
 
 
-def test_verify_local_channel_environment(tmp_path_factory):
-    """Test verify_local_channel_environment function."""
+@pytest.mark.web
+def test_verify_local_channel_environment(conda_vendor_data):
+    """Test verify_local_channel_environment using actual conda-vendor data."""
 
-    # create `my_local_channel_env.yaml` for this test
-    local_channel = str((TEST_DATA_DIR / "local_channel").resolve())
-    env = {
-        "name": "my_local_channel_env",
-        "channels": [local_channel],
-        "dependencies": [
-            "python",
-            "python-json-logger",
-        ],
-    }
+    conda_vendor_dir, env_name = conda_vendor_data
 
-    tmp_env_file = (
-        tmp_path_factory.mktemp("test_local_channel") / "my_local_channel_env.yaml"
-    )
+    # load existing env file
+    tmp_env_file = conda_vendor_dir / f"{env_name}.yaml"
+    env = load_yaml(tmp_env_file)
+
+    # swap out channels: `conda-forge` for `./my_local_channel_env` dir
+    env["channels"][0] = str(conda_vendor_dir / env_name)
     dump_yaml(env, tmp_env_file)
 
     assert verify_local_channel_environments(tmp_env_file)
