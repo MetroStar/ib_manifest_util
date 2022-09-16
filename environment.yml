@@ -5,6 +5,14 @@ channels:
 dependencies:
   - click
   # - conda-vendor
+  # ---
+  # copy of conda-vendor packages, remove when conda-vendor 1.0.3 is on conda-forge
+  - conda-lock=1.*
+  - conda-build
+  - conda=4.12.0
+  - mamba
+  - micromamba
+  # ---
   - jinja2
   - pip
   - pre-commit
