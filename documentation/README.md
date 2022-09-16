@@ -50,4 +50,6 @@ dedicated `gh-pages` branch from which the docs are served.
 
 When a PR is opened which makes changes to files in the documentation folder, the `Test Deployment` Action will run.
 
-When a PR is merged into `dev` or `main`, the `Test Deployment` Action and the `Publish Docs` Action will run.
+When a PR is merged into `dev` or `main`, the `Test Deployment` Action and the `Publish Docs` Action will run. The
+`Publish Docs` Action will build the Docusaurus website files and push them to the `gh-pages` branch. GitHub will
+then detect changes to the `gh-pages` branch and trigger its own deploy workflow.
