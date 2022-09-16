@@ -138,9 +138,7 @@ def conda_vendor_data(tmp_path_factory):
         pass
 
     os.chdir(conda_vendor_dir)
-    command = (
-        f"conda-vendor vendor --file {tmp_env_file} --solver conda --platform linux-64"
-    )
+    command = f"conda-vendor vendor --file {tmp_env_file} --solver micromamba --platform linux-64"
 
     proc = subprocess.check_call(
         command.split(" "), stdout=sys.stdout, stderr=sys.stderr
