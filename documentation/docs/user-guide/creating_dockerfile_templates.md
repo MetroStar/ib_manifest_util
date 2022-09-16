@@ -95,7 +95,10 @@ In order to create a Dockerfile, we really only need to account for 3 things:
 * a list of linux packages
 * a list of packages which start with an underscore
 
-That last one is rather interesting. Because of the way ...
+That last one is rather interesting. Because of the linting stage of the IB
+Pipeline, packages that lead with an underscore are deemed a security threat.
+To avoid conflicts, we remove the underscore temporarily and add it back on the
+other side of the fence.
 
 All you need to do is replace these 3 things with the jinja syntax for handling
 those lists. Instead of many lines of `COPY` statments, you'll now have:
