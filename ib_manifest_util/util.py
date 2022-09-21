@@ -9,7 +9,6 @@ from jinja2 import Environment, FileSystemLoader
 from ruamel.yaml import YAML
 
 from ib_manifest_util import TEMPLATE_DIR
-from ib_manifest_util.version import __version__
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
