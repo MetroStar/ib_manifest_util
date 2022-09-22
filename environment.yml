@@ -4,6 +4,7 @@ channels:
   - default
 dependencies:
   - click
+  - conda-vendor>=1.0.3
   - jinja2
   - pip
   - pre-commit
@@ -14,5 +15,4 @@ dependencies:
   - ruamel.yaml
   - urllib3
   - pip:
-    - conda-vendor>=1.0.3
     - -e .
