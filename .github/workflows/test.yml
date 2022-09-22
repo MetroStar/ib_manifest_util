@@ -16,15 +16,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install Conda environment with Micromamba
-        uses: mamba-org/provision-with-micromamba@main
+      - name: Install conda dependencies
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          cache-downloads: true
-          cache-env: true
+          python-version: "3.10"
+          activate-environment: ib_manifest_env
           environment-file: environment.yml
-          environment-name: ib_manifest_env
-          channels: conda-forge
-          channel-priority: strict
+          auto-activate-base: true
 
       - name: Install package
         run: |

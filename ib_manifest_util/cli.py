@@ -1,11 +1,10 @@
 from pathlib import Path
 
 import click
-import requests
 
+from ib_manifest_util import __version__
 from ib_manifest_util.download_conda_packages import download_packages
 from ib_manifest_util.update_repository import update_repo
-from ib_manifest_util.version import __version__
 
 
 @click.group()

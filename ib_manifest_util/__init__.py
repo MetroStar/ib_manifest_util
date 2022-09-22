@@ -1,6 +1,6 @@
 from pathlib import Path
 
-VERSION = "0.1.0"
+from ._version import __version__
 
 PACKAGE_DIR = Path(__file__).parent.resolve()
 DEVELOPMENT_DIR = PACKAGE_DIR.joinpath("..").resolve()
@@ -14,7 +14,6 @@ A command line tool to assist with updating and testing Iron Bank images.
 """
 
 __app_name__ = "Iron Bank Manifest Utility"
-__version__ = VERSION
 __author__ = "Ryan Crow, Tyler Potts"
 
 
