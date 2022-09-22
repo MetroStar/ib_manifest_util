@@ -185,16 +185,4 @@ def test_verify_local_channel_environment(conda_vendor_data):
     env["channels"][0] = str(conda_vendor_dir / env_name)
     dump_yaml(env, tmp_env_file)
 
-    try:
-        # determine location of `micromamba` binary
-        conda_binary = run_subprocess("which micromamba", return_as_str=True).strip(
-            "\n"
-        )
-    except CalledProcessError as e:
-        print(e)
-        # if no `micromamba`, try `conda`
-        conda_binary = run_subprocess("which conda", return_as_str=True).strip("\n")
-
-    assert verify_local_channel_environments(
-        tmp_env_file, conda_binary_loc=conda_binary
-    )
+    assert verify_local_channel_environments(tmp_env_file)

@@ -208,8 +208,8 @@ def verify_local_channel_environments(
             raise e
     logger.info(f"Using the following `conda` binary: {Path(conda_binary).resolve()}")
 
-    create_conda_env_command = conda_binary + f" create --file {local_channel_env} -y"
-    remove_conda_env_command = conda_binary + f" remove --name {name} -y"
+    create_conda_env_command = conda_binary + f" env create --file {local_channel_env}"
+    remove_conda_env_command = conda_binary + f" remove --name {name}"
 
     if offline_mode:
         create_conda_env_command += " --offline"
