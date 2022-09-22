@@ -131,22 +131,12 @@ def update_repo(
         else:
             startup_scripts.append(resource["filename"])
 
-    run_startup_scripts = 'mv "/home/${NB_USER}/code_server.tar.gz" /usr/local/bin/ \
-        && mv "/home/${NB_USER}/start.sh" /usr/local/bin/ \
-        && mv "/home/${NB_USER}/start-notebook.sh" /usr/local/bin/ \
-        && mv "/home/${NB_USER}/start-singleuser.sh" /usr/local/bin/ \
-        && chmod +x /usr/local/bin/start.sh \
-        && chmod +x /usr/local/bin/start-notebook.sh \
-        && chmod +x /usr/local/bin/start-singleuser.sh'
-
     # update the Dockerfile
     logger.info(f"Writing Dockerfile to {output_dockerfile_path}")
     write_dockerfile(
         noarch_packages,
         linux_packages,
         underscore_packages,
-        startup_scripts,
-        run_startup_scripts,
         output_path=output_dockerfile_path,
         dockerfile_template_path=dockerfile_template_path,
     )
