@@ -1,5 +1,8 @@
 import urllib
+from ast import Call
+from distutils.command.install_egg_info import safe_name
 from pathlib import Path
+from subprocess import CalledProcessError
 
 import pytest
 from ruamel.yaml import YAML
@@ -10,6 +13,7 @@ from ib_manifest_util.util import (
     dump_yaml,
     load_yaml,
     run_subprocess,
+    verify_local_channel_environments,
     write_templatized_file,
 )
 
@@ -165,3 +169,20 @@ def test_run_subprocess(capsys):
     captured = capsys.readouterr()
     assert captured.err == "", "No errors should result from subprocess."
     assert captured.out == "hello\n", "Subprocess output should match the test string."
+
+
+@pytest.mark.web
+def test_verify_local_channel_environment(conda_vendor_data):
+    """Test verify_local_channel_environment using actual conda-vendor data."""
+
+    conda_vendor_dir, env_name = conda_vendor_data
+
+    # load existing env file
+    tmp_env_file = conda_vendor_dir / f"{env_name}.yaml"
+    env = load_yaml(tmp_env_file)
+
+    # swap out channels: `conda-forge` for `./my_local_channel_env` dir
+    env["channels"][0] = str(conda_vendor_dir / env_name)
+    dump_yaml(env, tmp_env_file)
+
+    assert verify_local_channel_environments(tmp_env_file)
