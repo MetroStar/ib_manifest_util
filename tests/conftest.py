@@ -1,9 +1,13 @@
+import os
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 
 from ib_manifest_util import TEMPLATE_DIR, TEST_DATA_DIR
+from ib_manifest_util.util import dump_yaml, load_yaml
 
 
 @pytest.fixture(scope="session")
@@ -95,3 +99,46 @@ def cleanup():
     for item in to_delete:
         if Path(item).exists:
             item.unlink()
+
+
+@pytest.fixture
+@pytest.mark.web
+def conda_vendor_data(tmp_path_factory):
+    """Run `conda-vendor vendor` and run location of temp dir. Clean up when done.
+
+    NOTE: This fixture attempts to download packages from the `conda-forge` channel and store
+    them in a temporary directory. This will likely take 30-60 seconds to run.
+    """
+
+    env_name = "my_local_channel_env"
+
+    env = {
+        "name": env_name,
+        "channels": ["conda-forge"],
+        "dependencies": [
+            "tzdata",
+            "python-json-logger",
+        ],
+    }
+
+    conda_vendor_dir = tmp_path_factory.mktemp("conda_vendor_data")
+    tmp_env_file = conda_vendor_dir / f"{env_name}.yaml"
+    dump_yaml(env, tmp_env_file)
+
+    try:
+        shutil.rmtree(conda_vendor_dir / env_name)
+    except FileNotFoundError:
+        pass
+
+    os.chdir(conda_vendor_dir)
+    command = (
+        f"conda-vendor vendor --file {tmp_env_file} --solver conda --platform linux-64"
+    )
+
+    proc = subprocess.check_call(
+        command.split(" "), stdout=sys.stdout, stderr=sys.stderr
+    )
+
+    yield conda_vendor_dir, env_name
+
+    shutil.rmtree(conda_vendor_dir)
