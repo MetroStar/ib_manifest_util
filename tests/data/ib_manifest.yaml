@@ -14,3 +14,8 @@ resources:
   validation:
     type: sha256
     value: 1e2823cb2a526bc3a7031ad5dbfb992891f9ff9740d1c17cb6dbb8ebdfd33b27
+- url: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-2_gnu.tar.bz2
+  filename: _openmp_mutex-4.5-2_gnu.tar.bz2
+  validation:
+    type: sha256
+    value: fbe2c5e56a653bebb982eda4876a9178aedfc2b545f25d0ce9c4c0b508253d22
