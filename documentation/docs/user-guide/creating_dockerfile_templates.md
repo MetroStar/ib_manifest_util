@@ -15,7 +15,7 @@ For the most part, the Dockerfiles are fairly static with the exception of the
 python packages that get copied into them. Every time there is a change to the
 IB repo image, these packages get updated. The Dockerfile template allows you
 to avoid copy and pasting these COPY blocks or doing large string
-concatentations.
+concatenations.
 
 An example Dockerfile template is shown in the repository in the `/templates`
 directory. One is also provided here for reference, but we recommend starting
