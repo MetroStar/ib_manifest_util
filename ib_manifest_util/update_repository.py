@@ -119,13 +119,13 @@ def update_repo(
 
     for resource in resources:
         if "noarch" in resource["url"]:
-            if resource["filename"][0] == "_":
-                underscore_packages.append(resource["filename"][1:])
+            if resource["filename"].startswith("_"):
+                underscore_packages.append(resource["filename"].lstrip("_"))
             else:
                 noarch_packages.append(resource["filename"])
         elif "linux-64" in resource["url"]:
-            if resource["filename"][0] == "_":
-                underscore_packages.append(resource["filename"][1:])
+            if resource["filename"].startswith("_"):
+                underscore_packages.append(resource["filename"].lstrip("_"))
             else:
                 linux_packages.append(resource["filename"])
         else:

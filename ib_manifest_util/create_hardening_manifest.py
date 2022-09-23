@@ -164,8 +164,10 @@ def update_hardening_manifest(
 
     # clean the leading underscores for the hardening_manifest
     for idx, resource in enumerate(hardening_data["resources"]):
-        if resource["filename"][0] == "_":
-            hardening_data["resources"][idx]["filename"] = resource["filename"][1:]
+        if resource["filename"].startswith("_"):
+            hardening_data["resources"][idx]["filename"] = resource["filename"].lstrip(
+                "_"
+            )
 
     write_templatized_file(HARDENING_MANIFEST_TPL, output_path, hardening_data)
 
