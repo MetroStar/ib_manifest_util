@@ -27,7 +27,7 @@ Once those steps are done, users manually commit `linux-64/repodata.json`,
 then kicks off an Iron Bank pipeline.
 
 ### Next Steps
-From here, you may be interested in reviewing the [Getting Started]("getting-started/installation")
+From here, you may be interested in reviewing the [Getting Started](getting-started/installation)
 section, or if you've already installed IB Manifest, you can check out the docs on the
 [Basics](user-guide/basics).
 

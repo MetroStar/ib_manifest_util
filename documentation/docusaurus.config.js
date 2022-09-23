@@ -8,7 +8,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'Iron Bank Manifest Utility',
   tagline: 'Making an update to your IB container just got easier',
-  url: 'https://your-docusaurus-test-site.com',
+  url: 'https://metrostar.github.io',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -18,6 +18,8 @@ const config = {
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'MetroStar', // Usually your GitHub org/user name.
   projectName: 'ib_manifest_util', // Usually your repo name.
+  deploymentBranch: 'gh-pages',
+  trailingSlash: false,
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -86,8 +88,8 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
-                to: '/docs/intro',
+                label: 'Getting Started',
+                to: 'getting-started/installation',
               },
             ],
           },
