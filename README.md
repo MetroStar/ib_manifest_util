@@ -91,3 +91,15 @@ Some tests require external internet access to run. These tests are marked with
 ```bash
 pytest tests -vvv -m "not web"
 ```
+
+### Making a release
+
+IB Manifest uses a dev/main git workflow. All development work happens on `dev`,
+then when we're ready to release, we merge `dev` into `main` and release from
+`main`. Here are the basic steps:
+
+1) Ensure version number on `dev` has been incremented in `_version.py`
+2) PR from `dev` into `main`
+3) If there are conflicts, you'll have to create a new branch for the fix and
+the PR will then be from the new branch into main
+4) Tag a release on Github using the version number in `_version.py`
