@@ -52,8 +52,6 @@ def write_dockerfile(
     noarch_packages: list,
     linux_packages: list,
     underscore_packages: list,
-    startup_scripts: list,
-    run_startup_scripts: list,
     output_path: str | Path,
     dockerfile_template_path: str | Path = None,
 ):
@@ -70,39 +68,16 @@ def write_dockerfile(
         underscore_packages: list
             List of packages with an leading underscore. These requiring
             special handling in Iron Bank
-        startup_scripts: list
-            List of additional files to be copied into the Dockerfile
-        run_startup_scripts: list
-            List of RUN statements for the startup_scripts
         output_path: str | Path
             Output path for the created Dockerfile
         dockerfile_template_path: str | Path
             Full path to the template for the dockerfile
     """
 
-    copy_notebook_config = True
-
-    mkdirs = [
-        "/home/${NB_USER}/work",
-        "/home/${NB_USER}/conf",
-        "/home/${NB_USER}/tip_scripts",
-    ]
-
-    extra_entrypoints = [
-        ".init/start.sh",
-    ]
-
     content_dict = {
-        "base_image": "ironbank/opensource/metrostar/miniconda",
-        "base_tag": "4.11.0",
         "noarch_packages": noarch_packages,
         "linux_packages": linux_packages,
         "underscore_packages": underscore_packages,
-        "startup_scripts": startup_scripts,
-        "run_startup_scripts": run_startup_scripts,
-        "copy_notebook_config": copy_notebook_config,
-        "mkdirs": mkdirs,
-        "extra_entrypoints": extra_entrypoints,
     }
 
     if dockerfile_template_path:
@@ -118,5 +93,8 @@ def write_dockerfile(
         docker_template = DOCKERFILE_TPL
         template_dir = TEMPLATE_DIR
     write_templatized_file(
-        docker_template, output_path, content_dict, template_dir=template_dir
+        docker_template,
+        output_path,
+        content_dict,
+        template_dir=template_dir,
     )
