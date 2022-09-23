@@ -8,8 +8,8 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'Iron Bank Manifest Utility',
   tagline: 'Making an update to your IB container just got easier',
-  url: 'https://your-docusaurus-test-site.com',
-  baseUrl: '/ib_manifest_util/',
+  url: 'https://metrostar.github.io',
+  baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
