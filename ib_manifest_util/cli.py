@@ -86,8 +86,32 @@ def download_packages_cli(
     download_packages(manifest_path, urls, download_path)
 
 
+@click.command(
+    "verify_dockerfile",
+    help="Build Dockerfile and run a test...",
+)
+@click.option(
+    "--dockerfile_path",
+    default="Dockerfile",
+    help="Path to the hardening manifest from which to download packages",
+)
+def verify_dockerfile_cli(dockerfile_path: str | Path = "Dockerfile"):
+    from .util import patch_base_image, verify_dockerfile
+
+    image_info = {
+        "image_name": "registry.access.redhat.com/ubi8/ubi",
+        "image_tag": "8.6-943",
+    }
+
+    dockerfile_patched = patch_base_image(
+        **image_info, dockerfile=dockerfile_path, patch_existing=False
+    )
+    # verify_dockerfile(**image_info, dockerfile=dockerfile_patched)
+
+
 main.add_command(update_repo_cli)
 main.add_command(download_packages_cli)
+main.add_command(verify_dockerfile_cli)
 
 if __name__ == "__main__":
     main()

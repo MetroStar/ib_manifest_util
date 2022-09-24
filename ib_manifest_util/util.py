@@ -1,6 +1,10 @@
 import logging
+import re
 import subprocess
 import sys
+import time
+from cmath import log
+from email.mime import image
 from pathlib import Path
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
@@ -233,3 +237,93 @@ def verify_local_channel_environments(
     )
 
     return True
+
+
+def patch_base_image(
+    image_name: str | None = None,
+    image_tag: str | None = None,
+    dockerfile: str | Path = "Dockerfile",
+    patch_existing: bool = False,
+):
+    """
+    Replace the base image used by the `dockerfile` with `image_name:image_tag`.
+    """
+
+    if isinstance(dockerfile, str):
+        dockerfile = Path(dockerfile)
+
+    if image_name and image_tag:
+        image_name_tag = f"{image_name}:{image_tag}"
+    else:
+        raise ValueError("Please provide both image name and image tag.")
+
+    # match on lines that start with `FROM ...`
+    pattern = "^(FROM.+)"
+    new_base_image = f"FROM {image_name_tag.strip('FROM').strip()}"
+
+    logger.info(f"Replacing existing base image with: {new_base_image}")
+
+    with open(dockerfile, "r") as f:
+        filedata = f.read()
+
+    filedata = re.sub(pattern, new_base_image, filedata, flags=re.MULTILINE)
+
+    if patch_existing:
+        dockerfile_patched = dockerfile
+        logger.info(f"Patching the Dockerfile provided: {dockerfile.resolve()}")
+    else:
+        dockerfile_patched = dockerfile.with_suffix(".patched")
+        logger.info(
+            f"Creating a new Dockerfile.patched: {dockerfile_patched.resolve()}"
+        )
+
+    with open(dockerfile_patched, "w") as f:
+        f.write(filedata)
+
+    logger.info("The Dockerfile base image has been patched successfully.")
+
+    return dockerfile_patched
+
+
+def verify_dockerfile(
+    image_name: str | None = None,
+    image_tag: str | None = None,
+    dockerfile: str | Path = "Dockerfile.patched",
+    base_dir: str | Path = ".",
+):
+    """
+    Build `dockerfile`. To patch base image used, provide `image_name` and `image_tag`.
+    """
+    if isinstance(dockerfile, str):
+        dockerfile = Path(dockerfile)
+    if image_name and image_tag:
+        image_name_tag = f"{image_name}:{image_tag}"
+    elif not (image_name and image_tag):
+        timestamp = time.strftime("%Y%m%d%H%M%S", time.localtime())
+        image_name_tag = f"verify_dockerfile:{timestamp}"
+    else:
+        logger.error(
+            "Please provide both `image_name` and `image_tag`, or neither altogether."
+        )
+        raise ValueError
+
+    build_command = (
+        f"docker build -f {dockerfile.resolve()} -t {image_name_tag} {base_dir}"
+    )
+    remove_command = f"docker rmi --force {image_name_tag}"
+
+    try:
+        logger.info(
+            f"Building dockerfile: {dockerfile.resolve()} with the following command: {build_command}"
+        )
+        run_subprocess(build_command)
+        logger.info(
+            f"Docker image with name << {image_name_tag} >> has successfully been built."
+        )
+
+    except Exception as e:
+        raise (e)
+
+    finally:
+        logger.info(f"Removing the built docker container.")
+        run_subprocess(remove_command)
