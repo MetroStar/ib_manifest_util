@@ -1,81 +1,56 @@
-import shutil
 import urllib
+from ast import Call
+from distutils.command.install_egg_info import safe_name
 from pathlib import Path
+from subprocess import CalledProcessError
 
 import pytest
 from ruamel.yaml import YAML
 
-from ib_manifest_util import TEMPLATE_DIR, TEST_DATA_DIR
+from ib_manifest_util import TEST_DATA_DIR
 from ib_manifest_util.util import (
     download_files,
     dump_yaml,
     load_yaml,
     run_subprocess,
+    verify_local_channel_environments,
     write_templatized_file,
 )
 
 
-def test_write_templatized_file_hardening():
-    hardening_manifest_tpl = "hardening_manifest.tpl"
-    hardening_manifest_path = TEST_DATA_DIR.joinpath("hardening_manifest.yaml")
+def test_write_templatized_file_hardening(
+    hardening_manifest_tpl, tmpdir, hardening_manifest_content
+):
+    """Test writing a hardening manifest file via template"""
+    template_filename = hardening_manifest_tpl.name
+    template_dir = hardening_manifest_tpl.parent.resolve()
+    output_path = Path(tmpdir.join("test_hardening_manifest.yaml"))
 
-    content = {
-        "apiVersion": "v1",
-        "name": "opensource/metrostar/singleuser",
-        "tags": ["singeluser_v12"],
-        "args": {
-            "base_image": "opensource/metrostar/miniconda",
-            "base_tag": "4.12.0",
-        },
-        "labels": {
-            "title": "singleuser",
-            "description": "A base-notebook Singleuser image to use with JupyterHub",
-            "licenses": "BSD 3-Clause",
-            "url": "https://repo1.dso.mil/dsop/opensource/metrostar/singleuser",
-            "vendor": "MetroStar Systems",
-            "version": "singleuser_v11",
-            "keywords": "conda,python,jupyter,jupyterhub,jupyterlab",
-            "type": "opensource",
-            "name": "metrostar",
-        },
-        "resources": [
-            {
-                "url": "https://github.com/dirkcgrunwald/jupyter_codeserver_proxy-/archive/5596bc9c2fbd566180545fa242c659663755a427.tar.gz",
-                "filename": "code_server.tar.gz",
-                "validation": {
-                    "type": "sha256",
-                    "value": "7a286d6f201ae651368b65505cba7b0a137c81b2ac0fd637160d082bb14db032",
-                },
-            }
-        ],
-        "maintainers": [
-            {
-                "email": "jvelando@metrostarsystems.com",
-                "name": "Jonathan Velando",
-                "username": "jvelando",
-                "cht_member": "false",
-            }
-        ],
-    }
-
-    write_templatized_file(hardening_manifest_tpl, hardening_manifest_path, content)
+    write_templatized_file(
+        template_filename=template_filename,
+        output_path=output_path,
+        content=hardening_manifest_content,
+        template_dir=template_dir,
+    )
 
 
-@pytest.fixture
-def cleanup():
-    """Ensure removal of test files after testing is done.
+def test_write_templatized_file_dockefile_default(
+    dockerfile_default_tpl, tmpdir, dockerfile_default_content
+):
+    """Test writing a dockerfile (default) via template"""
+    template_filename = dockerfile_default_tpl.name
+    template_dir = dockerfile_default_tpl.parent.resolve()
+    output_path = Path(tmpdir.join("test_dockerfile"))
 
-    Call this function from the test function and append Path objects
-    to it for cleaning up, even if the assertion fails.
-
-    """
-    to_delete = []
-    yield to_delete
-    for item in to_delete:
-        if Path(item).exists:
-            item.unlink()
+    write_templatized_file(
+        template_filename=template_filename,
+        output_path=output_path,
+        content=dockerfile_default_content,
+        template_dir=template_dir,
+    )
 
 
+@pytest.mark.web
 def test_download_file_good_url(cleanup):
     """Test downloading from good URLs."""
 
@@ -93,6 +68,7 @@ def test_download_file_good_url(cleanup):
     assert 3000 < size < 4000, "File size should be around 3.6kB."
 
 
+@pytest.mark.web
 def test_download_file_bad_url():
     """Test downloading from bad URLs, with typos, incomplete paths, etc."""
 
@@ -112,6 +88,7 @@ def test_download_file_bad_url():
         download_files(urls=[url])
 
 
+@pytest.mark.web
 def test_download_file_multiple_urls(cleanup):
     """Test downloading more than one file."""
     urls = [
@@ -126,33 +103,17 @@ def test_download_file_multiple_urls(cleanup):
         assert f_path.exists(), f"File should be written to {f_path}."
 
 
-def load_yaml_for_testing(file_path: str | Path) -> dict:
-    """Load a yaml file.
-
-    This provides a method for loading yaml files independent of utils.load_yaml.
-    Args:
-        file_path: str | Path
-            Path to yaml file.
-    Returns: dict
-    """
-
-    yaml_loader = YAML(typ="safe")
-    file_path = Path(file_path).resolve()
-    with open(file_path, "r") as f:
-        return yaml_loader.load(f)
-
-
 def test_dump_yaml(cleanup):
     """Test that dictionary is correctly written to .yaml file"""
     sample_yaml_path = TEST_DATA_DIR.joinpath("sample_yaml.yaml")
     tempfile_path = Path("tempfile.yaml").resolve()
     cleanup.append(tempfile_path)
 
-    sample_yaml_dict = load_yaml_for_testing(sample_yaml_path)
+    sample_yaml_dict = load_yaml(sample_yaml_path)
 
     # Test path type Path
     dump_yaml(sample_yaml_dict, target_path=tempfile_path)
-    tempfile_dict = load_yaml_for_testing(tempfile_path)
+    tempfile_dict = load_yaml(tempfile_path)
     assert (
         tempfile_dict["myKey"] == "myValue"
     ), "Loaded yaml file should provide correct key-value pair."
@@ -208,3 +169,20 @@ def test_run_subprocess(capsys):
     captured = capsys.readouterr()
     assert captured.err == "", "No errors should result from subprocess."
     assert captured.out == "hello\n", "Subprocess output should match the test string."
+
+
+@pytest.mark.web
+def test_verify_local_channel_environment(conda_vendor_data):
+    """Test verify_local_channel_environment using actual conda-vendor data."""
+
+    conda_vendor_dir, env_name = conda_vendor_data
+
+    # load existing env file
+    tmp_env_file = conda_vendor_dir / f"{env_name}.yaml"
+    env = load_yaml(tmp_env_file)
+
+    # swap out channels: `conda-forge` for `./my_local_channel_env` dir
+    env["channels"][0] = str(conda_vendor_dir / env_name)
+    dump_yaml(env, tmp_env_file)
+
+    assert verify_local_channel_environments(tmp_env_file)
