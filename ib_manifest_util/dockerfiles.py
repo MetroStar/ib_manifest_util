@@ -5,7 +5,7 @@ from pathlib import Path
 from ib_manifest_util import TEMPLATE_DIR
 from ib_manifest_util.util import write_templatized_file
 
-DOCKERFILE_TPL = "Dockerfile_default.tpl"
+DOCKERFILE_TPL = "Dockerfile_singleuser.tpl"
 DEFAULT_DOCKERFILE_PATH = TEMPLATE_DIR.joinpath(DOCKERFILE_TPL)
 
 logger = logging.getLogger(__name__)

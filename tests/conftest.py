@@ -22,7 +22,7 @@ def repo_dir(tmp_path_factory):
 
 @pytest.fixture(scope="session")
 def dockerfile_default_tpl():
-    template_path = TEMPLATE_DIR.joinpath("Dockerfile_default.tpl")
+    template_path = TEMPLATE_DIR.joinpath("Dockerfile_singleuser.tpl")
     return template_path
 
 
