@@ -40,7 +40,7 @@ repo files. You may need to add or removed packages in `local_channel_env.yaml`
 or you may simply be updating the current channel with the most up-to-date
 packages.
 
-## Update the repository files
+## Generate the updated repository files
 
 Finally, we get to run `IB Manifest`!
 
@@ -110,3 +110,10 @@ update_repo(
 ### Running IB Manifest from the command line
 
 IB Manifest also includes a command line interface (CLI).
+
+## Push the updated files to the Iron Bank repository
+
+Now that you've updated all of the required files, you'll need to manually
+commit these files back to the Iron Bank repo.
+
+Once that's complete, you're done :tada:
