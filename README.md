@@ -102,4 +102,4 @@ then when we're ready to release, we merge `dev` into `main` and release from
 2) PR from `dev` into `main`
 3) If there are conflicts, you'll have to create a new branch for the fix and
 the PR will then be from the new branch into main
-4) Tag a release on Github using the version number in `_version.py`
+4) Tag a release on the Github UI using the version number in `_version.py`
