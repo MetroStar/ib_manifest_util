@@ -6,7 +6,7 @@ on:
     - main
     - dev
     paths:
-    - documentation
+    - documentation/**
     - .github/docs-deploy.yml
     - .github/docs-test-deploy.yml
     # Review gh actions docs if you want to further define triggers, paths, etc
