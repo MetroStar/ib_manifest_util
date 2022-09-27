@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.INFO)
 def update_repo(
     repo_dir: str | Path,
     dockerfile_version: str,
-    local_env_path: str | Path = "local_channel_env.yaml",
+    local_env_path: str | Path | None = None,
     startup_scripts_path: str | Path | None = None,
     output_hardening_path: str | Path | None = None,
     output_dockerfile_path: str | Path | None = None,
@@ -44,7 +44,7 @@ def update_repo(
         repo_dir: Full path to local copy of Iron Bank manifest repository.
         dockerfile_version: dockerfile version to add to hardening manifest.
         local_env_path: Optional. Full path to updated version of
-            `local_channel_env.yaml`.Default: 'local_channel_env.yaml'
+            `local_channel_env.yaml`. Default: 'repo_dir/scripts/local_channel_env.yaml'
         startup_scripts_path: Optional. Full path to yaml file with additional startup scripts.
         output_hardening_path: output path for the new `hardening_manifest.yaml`. Use `None` to
             overwrite the version in the repo
@@ -58,7 +58,9 @@ def update_repo(
         repo_dir = Path(repo_dir)
 
     # ensure local_env_path is a Path object
-    if isinstance(local_env_path, str):
+    if not local_env_path:
+        local_env_path = repo_dir.joinpath("scripts", "local_channel_env.yaml")
+    elif isinstance(local_env_path, str):
         local_env_path = Path(local_env_path)
 
     # if an output path for the Dockerfile is not provided, overwrite the one
@@ -117,25 +119,17 @@ def update_repo(
 
     for resource in resources:
         if "noarch" in resource["url"]:
-            if resource["filename"][0] == "_":
-                underscore_packages.append(resource["filename"][1:])
+            if resource["filename"].startswith("_"):
+                underscore_packages.append(resource["filename"].lstrip("_"))
             else:
                 noarch_packages.append(resource["filename"])
         elif "linux-64" in resource["url"]:
-            if resource["filename"][0] == "_":
-                underscore_packages.append(resource["filename"][1:])
+            if resource["filename"].startswith("_"):
+                underscore_packages.append(resource["filename"].lstrip("_"))
             else:
                 linux_packages.append(resource["filename"])
         else:
             startup_scripts.append(resource["filename"])
-
-    run_startup_scripts = 'mv "/home/${NB_USER}/code_server.tar.gz" /usr/local/bin/ \
-        && mv "/home/${NB_USER}/start.sh" /usr/local/bin/ \
-        && mv "/home/${NB_USER}/start-notebook.sh" /usr/local/bin/ \
-        && mv "/home/${NB_USER}/start-singleuser.sh" /usr/local/bin/ \
-        && chmod +x /usr/local/bin/start.sh \
-        && chmod +x /usr/local/bin/start-notebook.sh \
-        && chmod +x /usr/local/bin/start-singleuser.sh'
 
     # update the Dockerfile
     logger.info(f"Writing Dockerfile to {output_dockerfile_path}")
@@ -143,8 +137,6 @@ def update_repo(
         noarch_packages,
         linux_packages,
         underscore_packages,
-        startup_scripts,
-        run_startup_scripts,
         output_path=output_dockerfile_path,
         dockerfile_template_path=dockerfile_template_path,
     )

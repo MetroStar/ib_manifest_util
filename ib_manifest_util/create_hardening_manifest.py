@@ -1,5 +1,6 @@
 import logging
 import shutil
+from copy import deepcopy
 from pathlib import Path
 
 from ruamel.yaml import YAML
@@ -158,6 +159,16 @@ def update_hardening_manifest(
         )
     hardening_data["tags"] = [dockerfile_version]
 
+    # store resources with underscores (we'll need to flag them later)
+    unclean_resources = deepcopy(hardening_data["resources"])
+
+    # clean the leading underscores for the hardening_manifest
+    for idx, resource in enumerate(hardening_data["resources"]):
+        if resource["filename"].startswith("_"):
+            hardening_data["resources"][idx]["filename"] = resource["filename"].lstrip(
+                "_"
+            )
+
     write_templatized_file(HARDENING_MANIFEST_TPL, output_path, hardening_data)
 
-    return hardening_data["resources"]
+    return unclean_resources
