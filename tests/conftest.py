@@ -2,7 +2,6 @@ import os
 import shutil
 import subprocess
 import sys
-from asyncio.log import logger
 from pathlib import Path
 
 import pytest
@@ -158,5 +157,5 @@ def conda_vendor_data(tmp_path_factory):
             command.split(" "), stdout=sys.stdout, stderr=sys.stderr
         )
     except subprocess.CalledProcessError as e:
-        logger.warning(e)
-        logger.warning(f"Failed to remove conda environment: {env_name}")
+        print(f"Failed to remove conda environment: {env_name}")
+        raise e
