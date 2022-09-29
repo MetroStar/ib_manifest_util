@@ -107,9 +107,74 @@ update_repo(
 ```
 </details>
 
+
 ### Running IB Manifest from the command line
 
-IB Manifest also includes a command line interface (CLI).
+
+To get started, ensure that you have the `ib_manifest_util` package installed. To verify, the following command from you terminal:
+
+```bash
+$ ib_manifest_util --version
+ib_manifest_util, version 0.1.0
+```
+
+And for help:
+
+```shell
+$ ib_manifest_util --help
+
+Usage: ib_manifest_util [OPTIONS] COMMAND [ARGS]...
+
+  To display help and usage for subcommands, use: ib_manifest_util [COMMAND]
+  --help
+
+Options:
+  --version  Show the version and exit.
+  --help     Show this message and exit.
+
+Commands:
+  download_packages  Download necessary Python packages given an Iron...
+  update_repo        Update the local hardening manifest and Dockerfile...
+```
+
+:::info
+If these commands don't work for you, double-check you have the package installed. See the [installation instructions](../getting-started/installation.md) for details.
+::::
+
+As the help page outlines, there are currently two high-level commands, `download_packages` and `update_repo`. To make the same changes as [above](updating_repos.md#running-ib-manifest-from-python),
+we will use the `update_repo` command. To get a better understanding of how to use it, run the `--help` command:
+
+```shell
+$ ib_manifest_util update_repo --help
+Usage: ib_manifest_util update_repo [OPTIONS]
+
+  Update the local hardening manifest and Dockerfile with necessary packages
+  given an environment file
+
+Options:
+  --repo_dir TEXT
+  --dockerfile_version TEXT
+  --local_env_path TEXT          Path to local environment file
+  --startup_scripts_path TEXT    (Optional) Path to .yaml file containing
+                                 additional files to copy
+  --output_hardening_path TEXT   (Optional) Path to location in which the
+                                 hardening manifest will be placed
+  --output_dockerfile_path TEXT  (Optional) Path to location in which the
+                                 Dockerfile will be placed
+  --help                         Show this message and exit.
+```
+
+
+Okay, so assuming the Iron Bank repository has been cloned locally, then we can running the following command.
+This will update the two `repodata.json` files, the `Dockerfile` and `hardening_manifest.yaml`.
+
+
+```shell
+ib_manifest_util update_repo --repo_dir ~/path/to/ib-repo --dockerfile_version 9999
+```
+
+As stated, this command will accomplish the same thing as the running `update_repo` as a Python module.
+
 
 ## Push the updated files to the Iron Bank repository
 
