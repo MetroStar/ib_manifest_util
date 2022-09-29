@@ -141,4 +141,21 @@ def conda_vendor_data(tmp_path_factory):
 
     yield conda_vendor_dir, env_name
 
+    # ensure that the temp folder is removed
     shutil.rmtree(conda_vendor_dir)
+
+    # ensure that the temp conda env is removed
+    try:
+        conda_prefix = os.environ.get("CONDA_PREFIX", None)
+        if conda_prefix:
+            env_path = f"{conda_prefix}/envs/{env_name}"
+            command = f"conda env remove --prefix {env_path}"
+        else:
+            command = f"conda env remove --name {env_name}"
+
+        proc = subprocess.check_call(
+            command.split(" "), stdout=sys.stdout, stderr=sys.stderr
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to remove conda environment: {env_name}")
+        raise e
