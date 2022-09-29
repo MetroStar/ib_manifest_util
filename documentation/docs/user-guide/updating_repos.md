@@ -111,7 +111,7 @@ update_repo(
 ### Running IB Manifest from the command line
 
 
-To get started, ensure that you have the `ib_manifest_util` package installed. To verify, the following command from you terminal:
+To get started, ensure that you have the `ib_manifest_util` package installed. To verify, run the following command from you terminal:
 
 ```bash
 $ ib_manifest_util --version
@@ -138,7 +138,7 @@ Commands:
 ```
 
 :::info
-If these commands don't work for you, double-check you have the package installed. See the [installation instructions](../getting-started/installation.md) for details.
+If these commands don't work for you, double check you have the package installed. See the [installation instructions](../getting-started/installation.md) for details.
 ::::
 
 As the help page outlines, there are currently two high-level commands, `download_packages` and `update_repo`. To make the same changes as [above](updating_repos.md#running-ib-manifest-from-python),
@@ -165,8 +165,7 @@ Options:
 ```
 
 
-Okay, so assuming the Iron Bank repository has been cloned locally, then we can running the following command.
-This will update the two `repodata.json` files, the `Dockerfile` and `hardening_manifest.yaml`.
+Okay, so assuming the Iron Bank repository has been cloned locally and the repo has a `Dockerfile.tpl`, then running the following command will update the two `repodata.json`, the `Dockerfile` and the `hardening_manifest.yaml`.
 
 
 ```shell
