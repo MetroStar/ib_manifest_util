@@ -165,14 +165,14 @@ Options:
 ```
 
 
-Okay, so assuming the Iron Bank repository has been cloned locally and the repo has a `Dockerfile.tpl`, then running the following command will update the two `repodata.json`, the `Dockerfile` and the `hardening_manifest.yaml`.
+Okay, so assuming the Iron Bank repository has been cloned locally and the repo has a `Dockerfile.tpl`, then running the following command will update the two `repodata.json`, the `Dockerfile` and the `hardening_manifest.yaml`:
 
 
 ```shell
 ib_manifest_util update_repo --repo_dir ~/path/to/ib-repo --dockerfile_version 9999
 ```
 
-As stated, this command will accomplish the same thing as the running `update_repo` as a Python module.
+The last step is to check everything worked as expected, then push these changes up the Iron Bank repo on [gitlab.com](gitlab.com).
 
 
 ## Push the updated files to the Iron Bank repository
