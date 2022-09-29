@@ -87,7 +87,9 @@ def update_repo(
 
     # create local channel using conda-vendor
     logger.info(f"Creating local conda channel")
-    local_channel_path = create_local_conda_channel(env_path=local_env_path)
+    local_channel_path = create_local_conda_channel(
+        env_path=local_env_path, root_channel_dir=repo_dir
+    )
 
     # copy repodata.json back to the repo
     architectures = ["noarch", "linux-64"]
