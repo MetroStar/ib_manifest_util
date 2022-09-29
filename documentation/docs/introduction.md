@@ -28,8 +28,8 @@ then kicks off an Iron Bank pipeline.
 
 ### Next Steps
 From here, you may be interested in reviewing the [Getting Started](getting-started/installation)
-section, or if you've already installed IB Manifest, you can check out the docs on the
-[Basics](user-guide/basics).
+section, or if you've already installed IB Manifest, you can check out the docs on
+[updating an Iron Bank repo](user-guide/updating_repos).
 
 <!-- Links -->
 [ib-repo]: https://repo1.dso.mil/dsop
