@@ -111,7 +111,7 @@ update_repo(
 ### Running IB Manifest from the command line
 
 
-To get started, ensure that you have the `ib_manifest_util` package installed. To verify, run the following command from you terminal:
+To get started, ensure that you have the `ib_manifest_util` package installed. To verify, run the following command from your terminal:
 
 ```bash
 $ ib_manifest_util --version
@@ -141,7 +141,7 @@ Commands:
 If these commands don't work for you, double check you have the package installed. See the [installation instructions](../getting-started/installation.md) for details.
 ::::
 
-As the help page outlines, there are currently two high-level commands, `download_packages` and `update_repo`. To make the same changes as [above](updating_repos.md#running-ib-manifest-from-python),
+As the help page outlines, there are two high-level commands, `download_packages` and `update_repo`. To make the same changes as [above](updating_repos.md#running-ib-manifest-from-python),
 we will use the `update_repo` command. To get a better understanding of how to use it, run the `--help` command:
 
 ```shell
@@ -165,14 +165,14 @@ Options:
 ```
 
 
-Okay, so assuming the Iron Bank repository has been cloned locally and the repo has a `Dockerfile.tpl`, then running the following command will update the two `repodata.json`, the `Dockerfile` and the `hardening_manifest.yaml`:
+Assuming the Iron Bank repository has been cloned locally and the repo has a `Dockerfile.tpl`, then running the following command will update the two `repodata.json`, the `Dockerfile` and the `hardening_manifest.yaml`:
 
 
 ```shell
 ib_manifest_util update_repo --repo_dir ~/path/to/ib-repo --dockerfile_version 9999
 ```
 
-The last step is to check everything worked as expected, then push these changes up the Iron Bank repo on [gitlab.com](gitlab.com).
+The last step is to review the new files and push them back to the Iron Bank repo.
 
 
 ## Push the updated files to the Iron Bank repository
