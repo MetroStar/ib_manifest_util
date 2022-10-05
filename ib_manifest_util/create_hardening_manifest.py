@@ -1,5 +1,5 @@
 import logging
-import shutil
+import os
 from copy import deepcopy
 from pathlib import Path
 
@@ -34,6 +34,9 @@ def create_local_conda_channel(
             The root directory where the channel will be created (not
             including the channel directory itself)
     """
+    # ensure that all the temp files/folders are consistently created in the same place
+    os.chdir(root_channel_dir)
+
     # read the env file
     env = load_yaml(env_path)
 
@@ -57,10 +60,10 @@ def create_local_conda_channel(
     # remove local conda channel dir if it already exists
     # TODO: remove this when conda-vendor is no longer called from subprocess
     if output_path.exists():
-        logger.warning(
-            f"Local channel path ({output_path}) already exists, removing existing directory before creating a new the channel"
+        logger.error(
+            f"Local channel path ({output_path}) already exists. Please remove existing directory before creating a new the channel"
         )
-        shutil.rmtree(output_path)
+        raise FileExistsError(output_path)
 
     # run conda-vendor to create the local conda channel
     # this may take a while, it performs the solves and downloads all packages
