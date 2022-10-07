@@ -27,14 +27,14 @@ RUN dnf update -y && dnf install -y bzip2 gcc
 COPY [ \{%- for pkg in noarch_packages %}
 "{{ pkg }}", \
 {%- endfor %}
-"${LOCAL_CONDA_CHANNEL}/noarch/", \
+"${LOCAL_CONDA_CHANNEL}/noarch/" \
 ]
 
 # linux packages
 COPY [ \{%- for pkg in linux_packages %}
 "{{ pkg }}", \
 {%- endfor %}
-"${LOCAL_CONDA_CHANNEL}/linux-64/", \
+"${LOCAL_CONDA_CHANNEL}/linux-64/" \
 ]
 
 # special handling for packages with underscores
