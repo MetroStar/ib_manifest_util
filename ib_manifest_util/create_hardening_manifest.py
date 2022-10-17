@@ -121,9 +121,9 @@ def update_hardening_manifest(
     startup_scripts_path=None,
     output_path=None,
 ):
-    """Update hardening_manifest.yaml with the resouces from ib_manifest.yaml.
+    """Update hardening_manifest.yaml with the resources from ib_manifest.yaml.
 
-    Also updates the dockefile version and adds any additional startup
+    Also updates the dockerfile version and adds any additional startup
     scripts needed.
 
     Args:
@@ -157,9 +157,8 @@ def update_hardening_manifest(
     # add startup scripts to the front of the resources list
     if startup_scripts_path:
         startup_scripts = load_yaml(startup_scripts_path)
-        hardening_data["resources"] = startup_scripts["resources"].extend(
-            hardening_data["resources"]
-        )
+        startup_scripts["resources"].extend(hardening_data["resources"])
+        hardening_data["resources"] = startup_scripts["resources"]
     hardening_data["tags"] = [dockerfile_version]
 
     # store resources with underscores (we'll need to flag them later)
