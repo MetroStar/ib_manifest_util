@@ -53,10 +53,10 @@ COPY [ \{%- for pkg in linux_packages %}
 COPY ["{{ pkg }}", "${LOCAL_CONDA_CHANNEL}/linux-64/_{{ pkg }}"]
 {%- endfor %}
 
-COPY ["code_server.tar.gz", \ 
-"start.sh", \ 
-"start-notebook.sh", \ 
-"start-singleuser.sh", \ 
+COPY ["code_server.tar.gz", \
+"start.sh", \
+"start-notebook.sh", \
+"start-singleuser.sh", \
 "/home/${NB_USER}/"]
 
 RUN mv "/home/${NB_USER}/code_server.tar.gz" /usr/local/bin/ \
@@ -66,7 +66,7 @@ RUN mv "/home/${NB_USER}/code_server.tar.gz" /usr/local/bin/ \
     && chmod +x /usr/local/bin/start.sh \
     && chmod +x /usr/local/bin/start-notebook.sh \
     && chmod +x /usr/local/bin/start-singleuser.sh
-    
+
 
 RUN chown -R ${NB_USER}:${NB_USER} ${LOCAL_CONDA_CHANNEL}
 
@@ -83,7 +83,7 @@ RUN mkdir "/home/${NB_USER}/work"
 # Create directories for TIP
 RUN mkdir "/home/${NB_USER}/conf"
 RUN mkdir "/home/${NB_USER}/tip_scripts"
- 
+
 ENV PATH="${CONDA_PATH}/bin:$PATH"
 
 WORKDIR /home/${NB_USER}

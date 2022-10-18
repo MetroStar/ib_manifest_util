@@ -74,7 +74,7 @@ def update_repo(
         if isinstance(dockerfile_template_path, str):
             dockerfile_template_path = Path(dockerfile_template_path)
     elif repo_dir.joinpath("Dockerfile.tpl").exists():
-        dockerfile_template_path = repo_dir.joinpath("Dockerfile.tpl")
+        dockerfile_template_path = repo_dir.joinpath("scripts", "Dockerfile.tpl")
         logger.info(
             f"Dockerfile template not explicitly provided, using dockerfile template from repo, {dockerfile_template_path}"
         )
