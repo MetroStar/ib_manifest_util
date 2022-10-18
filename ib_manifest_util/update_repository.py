@@ -25,6 +25,7 @@ def update_repo(
     output_hardening_path: str | Path | None = None,
     output_dockerfile_path: str | Path | None = None,
     dockerfile_template_path: str | Path = None,
+    cleanup: bool = False,
 ):
     """High level function to update an Iron Bank repository with a new environment.
 
@@ -87,7 +88,9 @@ def update_repo(
 
     # create local channel using conda-vendor
     logger.info(f"Creating local conda channel")
-    local_channel_path = create_local_conda_channel(env_path=local_env_path)
+    local_channel_path = create_local_conda_channel(
+        env_path=local_env_path, root_channel_dir=repo_dir
+    )
 
     # copy repodata.json back to the repo
     architectures = ["noarch", "linux-64"]
@@ -141,9 +144,10 @@ def update_repo(
         dockerfile_template_path=dockerfile_template_path,
     )
 
-    # clean up ib_manifest.yaml
-    logger.info(
-        f"Cleaning up. Removing {ib_manifest_path} and local conda channel {local_channel_path}"
-    )
-    ib_manifest_path.unlink()
-    shutil.rmtree(local_channel_path)
+    if cleanup:
+        # clean up ib_manifest.yaml
+        logger.info(
+            f"Cleaning up. Removing {ib_manifest_path} and local conda channel {local_channel_path}"
+        )
+        ib_manifest_path.unlink()
+        shutil.rmtree(local_channel_path)
