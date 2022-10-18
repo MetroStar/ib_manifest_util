@@ -30,7 +30,7 @@ resources:
       value: fbe2c5e56a653bebb982eda4876a9178aedfc2b545f25d0ce9c4c0b508253d22
 
 maintainers:
-  - email: jvelando@metrostarsystems.com
-    name: Jonathan Velando
-    username: jvelando
+  - email: demo@email.com
+    name: Demo demo
+    username: demo
     cht_member: false

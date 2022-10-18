@@ -1,5 +1,5 @@
 import logging
-import shutil
+import os
 from copy import deepcopy
 from pathlib import Path
 
@@ -34,6 +34,9 @@ def create_local_conda_channel(
             The root directory where the channel will be created (not
             including the channel directory itself)
     """
+    # ensure that all the temp files/folders are consistently created in the same place
+    os.chdir(root_channel_dir)
+
     # read the env file
     env = load_yaml(env_path)
 
@@ -57,10 +60,10 @@ def create_local_conda_channel(
     # remove local conda channel dir if it already exists
     # TODO: remove this when conda-vendor is no longer called from subprocess
     if output_path.exists():
-        logger.warning(
-            f"Local channel path ({output_path}) already exists, removing existing directory before creating a new the channel"
+        logger.error(
+            f"Local channel path ({output_path}) already exists. Please remove existing directory before creating a new the channel"
         )
-        shutil.rmtree(output_path)
+        raise FileExistsError(output_path)
 
     # run conda-vendor to create the local conda channel
     # this may take a while, it performs the solves and downloads all packages
@@ -118,9 +121,9 @@ def update_hardening_manifest(
     startup_scripts_path=None,
     output_path=None,
 ):
-    """Update hardening_manifest.yaml with the resouces from ib_manifest.yaml.
+    """Update hardening_manifest.yaml with the resources from ib_manifest.yaml.
 
-    Also updates the dockefile version and adds any additional startup
+    Also updates the dockerfile version and adds any additional startup
     scripts needed.
 
     Args:
@@ -154,9 +157,8 @@ def update_hardening_manifest(
     # add startup scripts to the front of the resources list
     if startup_scripts_path:
         startup_scripts = load_yaml(startup_scripts_path)
-        hardening_data["resources"] = startup_scripts["resources"].extend(
-            hardening_data["resources"]
-        )
+        startup_scripts["resources"].extend(hardening_data["resources"])
+        hardening_data["resources"] = startup_scripts["resources"]
     hardening_data["tags"] = [dockerfile_version]
 
     # store resources with underscores (we'll need to flag them later)

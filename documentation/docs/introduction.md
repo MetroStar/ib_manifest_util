@@ -22,14 +22,27 @@ What's happening behind the scenes:
 5. Copy the `ib_manifest.yaml` contents into `hardening_manifest.yaml`
 6. Create a new `Dockerfile` with the new package(s)
 
+---
+**Schematic of the IB Manifest Workflow:**
+
+![IB manifest workflow schematic](../static/img/ib_manifest_workflow.png)
+
+---
+
 Once those steps are done, users manually commit `linux-64/repodata.json`,
 `noarch/repodata.json`, `hardening_manifest.yaml` and `Dockerfile` to git, which
-then kicks off an Iron Bank pipeline.
+then kicks off the Iron Bank workflow below (outside the scope of this package).
+
+---
+**Schematic of the Iron Bank GitLab CI Workflow:**
+![Iron Bank GitLab CI workflow schematic](../static/img/iron_bank_workflow.png)
+
+---
 
 ### Next Steps
 From here, you may be interested in reviewing the [Getting Started](getting-started/installation)
-section, or if you've already installed IB Manifest, you can check out the docs on the
-[Basics](user-guide/basics).
+section, or if you've already installed IB Manifest, you can check out the docs on
+[updating an Iron Bank repo](user-guide/updating_repos).
 
 <!-- Links -->
 [ib-repo]: https://repo1.dso.mil/dsop
